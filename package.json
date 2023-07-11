@@ -1,0 +1,22 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/Bot.js",
+  "scripts": {
+    "start": "npx nodemon"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.3.1",
+    "nodemon": "^3.0.1",
+    "openai": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
