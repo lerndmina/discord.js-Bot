@@ -1,6 +1,5 @@
-const { Client, Collection, Events, GatewayIntentBits, Partials } = require("discord.js");
-const ready = require("./listeners/ready");
-const syncCommands = require("./utils/register-commands");
+const { Client, Collection, Events, GatewayIntentBits, Partials, Message, MessageType } = require("discord.js");
+var log = require('fancy-log');
 
 require("dotenv").config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -10,30 +9,33 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // Check all required environment variables are set
 if (!BOT_TOKEN) {
-	console.error("Missing BOT_TOKEN environment variable.");
+	log.error("Missing BOT_TOKEN environment variable.");
 	process.exit(1);
 }
 if (!OWNER_ID) {
-	console.error("Missing OWNER_ID environment variable.");
+	log.error("Missing OWNER_ID environment variable.");
 	process.exit(1);
 }
 if (!PREFIX) {
-	console.error("Missing PREFIX environment variable.");
+	log.error("Missing PREFIX environment variable.");
 	process.exit(1);
 }
 if (!OPENAI_API_KEY) {
-	console.error("Missing OPENAI_API_KEY environment variable.");
+	log.error("Missing OPENAI_API_KEY environment variable.");
 	process.exit(1);
 }
 
 
 const fs = require("fs");
 const path = require("node:path");
+const onMention = require("./listeners/onMention");
+const ready = require("./listeners/ready");
+const syncCommands = require("./utils/register-commands");
 
 // Clear the console
 console.clear();
 
-console.log("Bot is starting...");
+log("Bot is starting...");
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages],
@@ -54,7 +56,7 @@ for (const folder of commandFolders) {
     if ("data" in command && "execute" in command) {
       client.commands.set(command.data.name, command);
     } else {
-      console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+      log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
     }
   }
 }
@@ -67,7 +69,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
-      console.error(`No command matching ${interaction.commandName} was found.`);
+      log.error(`No command matching ${interaction.commandName} was found.`);
       return;
     }
 
@@ -80,7 +82,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   } else if (interaction.isContextMenuCommand()) {
     const command = interaction.client.commands.get(interaction.commandName);
     if (!command) {
-      console.error(`No command matching ${interaction.commandName} was found.`);
+      log.error(`No command matching ${interaction.commandName} was found.`);
       return;
     }
     try {
@@ -110,9 +112,20 @@ client.on(Events.MessageCreate, async (message) => {
 			reply.delete();
       message.delete();
 		}, 1000);
-		console.log("Rebooting...");
+		log("Rebooting...");
 		process.exit(0);		
 	}
+  else {
+    const channel = message.channel;
+    if (message.type == MessageType.Reply) {
+      const repliedMessage = await channel.messages.fetch(message.reference.messageId);
+      if (repliedMessage.author.id == client.user.id) {
+        onMention(client, message, OPENAI_API_KEY)
+      }
+    } else if (message.mentions.has(client.user.id)) {
+      onMention(client, message, OPENAI_API_KEY)
+    }
+  }
 });
 
 ready(client);
@@ -121,7 +134,7 @@ client.login(BOT_TOKEN);
 
 async function interactionErrror(errorContent, interaction) {
 	const errorMsg = "There was an error while executing this command! Please inform the bot owner.";
-		console.error(errorContent);
+		log.error(errorContent);
 		if (interaction.replied || interaction.deferred) {
 			await interaction.followUp({ content: errorMsg, ephemeral: true });
 		} else {

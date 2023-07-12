@@ -4,13 +4,15 @@
   "description": "",
   "main": "src/Bot.js",
   "scripts": {
-    "start": "npx nodemon"
+    "dev": "npx nodemon",
+    "start": "node src/Bot.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
+    "fancy-log": "^2.0.0",
     "nodemon": "^3.0.1",
     "openai": "^3.3.0"
   },

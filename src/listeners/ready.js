@@ -1,4 +1,5 @@
 const { Client } = require("discord.js");
+var log = require('fancy-log');
 
 module.exports = (client) => {
   client.on("ready", async () => {
@@ -6,6 +7,6 @@ module.exports = (client) => {
       return;
     }
 
-    console.log(`Logged in as ${client.user.username}!`);
+    log(`Logged in as ${client.user.tag}`);
   });
 };

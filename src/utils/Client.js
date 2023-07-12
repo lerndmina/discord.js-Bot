@@ -1,4 +1,5 @@
 import { Client, Collection } from "discord.js";
+var log = require('fancy-log');
 
 export default class MyClient extends Client {
   collection; // use correct type :)

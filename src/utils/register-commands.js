@@ -1,6 +1,7 @@
 const { REST, Routes } = require("discord.js");
 const fs = require("node:fs");
 const path = require("node:path");
+var log = require('fancy-log');
 
 require("dotenv").config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -25,7 +26,7 @@ const syncCommands = async (message) => {
       if ("data" in command && "execute" in command) {
         commands.push(command.data.toJSON());
       } else {
-        console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+        log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
       }
     }
   }
@@ -35,25 +36,25 @@ const syncCommands = async (message) => {
 
   // Delete all global commands for the application
   try {
-    console.log("Started deleting global commands...");
+    log("Started deleting global commands...");
     await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), { body: [] });
   } catch (error) {
-    console.error("Failed to delete global commands:", error);
+    log.error("Failed to delete global commands:", error);
     isError = true;
     return;
   }
 
   // and deploy your commands!
   try {
-    console.log(`Started refreshing ${commands.length} application (/) commands.`);
+    log(`Started refreshing ${commands.length} application (/) commands.`);
 
     // The put method is used to fully refresh all commands in the guild with the current set
     const data = await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), { body: commands });
 
-    console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    log(`Successfully reloaded ${data.length} application (/) commands.`);
   } catch (error) {
     // And of course, make sure you catch and log any errors!
-    console.error(error);
+    log.error(error);
     isError = true;
   }
   if (isError) {
