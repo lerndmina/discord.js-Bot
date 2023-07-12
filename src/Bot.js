@@ -1,4 +1,4 @@
-const { Client, Collection, Events, GatewayIntentBits, Partials, Message, MessageType } = require("discord.js");
+const { Client, Collection, Events, GatewayIntentBits, Partials, Message, MessageType, MessageFlags } = require("discord.js");
 var log = require('fancy-log');
 
 require("dotenv").config();
@@ -31,6 +31,7 @@ const path = require("node:path");
 const onMention = require("./listeners/onMention");
 const ready = require("./listeners/ready");
 const syncCommands = require("./utils/register-commands");
+const TranscribeMessage = require("./utils/TranscribeMessage");
 
 
 log("Bot is starting...");
@@ -113,16 +114,17 @@ client.on(Events.MessageCreate, async (message) => {
 		log("Rebooting...");
 		process.exit(0);		
 	}
-  else {
+  else if (message.type == MessageType.Reply) {
     const channel = message.channel;
-    if (message.type == MessageType.Reply) {
-      const repliedMessage = await channel.messages.fetch(message.reference.messageId);
-      if (repliedMessage.author.id == client.user.id) {
-        onMention(client, message, OPENAI_API_KEY)
-      }
-    } else if (message.mentions.has(client.user.id)) {
+    const repliedMessage = await channel.messages.fetch(message.reference.messageId);
+    if (repliedMessage.author.id == client.user.id) {
       onMention(client, message, OPENAI_API_KEY)
     }
+  } else if (message.mentions.has(client.user.id)) {
+    onMention(client, message, OPENAI_API_KEY)
+  }
+  else if (message.flags == MessageFlags.IsVoiceMessage && message.attachments.size == 1){
+    TranscribeMessage(client, message, OPENAI_API_KEY)
   }
 });
 
