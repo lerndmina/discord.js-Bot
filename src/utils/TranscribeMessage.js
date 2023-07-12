@@ -13,6 +13,7 @@ const TranscribeMessage = async (client, message, apiKey) => {
   ffmpeg.getAvailableFormats(function(err, formats) {
     if (err) {
       log.error(`FFMPEG ERR: ${err}`);
+      message.reply("Sorry, there was an error while trying to load FFMPEG. Please try again later.");
       process.exit(1);
     }});
 
@@ -40,13 +41,12 @@ const TranscribeMessage = async (client, message, apiKey) => {
   await ConvertFile(fileName, "ogg", "mp3");
   DeleteFile(fileName, "ogg");
 
-  log(`Transcribing ${fileName}.mp3...`)
-
 
   // Transcribe audio
   whisper.transcribe(`${fileName}.mp3`, 'whisper-1')
   .then(text => {
-    message.reply(`✨ Transcription: ${text}`);
+    message.reply(`✨ Voice Transcription:\n\n\`\`\`${text}\`\`\``);
+    log(`Transcribed a message from ${message.author.username} in ${message.channel.name ? message.channel.name : "Direct Messages"}`)
     DeleteFile(fileName, "mp3");
   })
   .catch(error => {

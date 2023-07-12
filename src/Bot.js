@@ -38,7 +38,7 @@ log("Bot is starting...");
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages],
-  partials: [Partials.Channel, Partials.Message],
+  partials: [Partials.Channel, Partials.Message, Partials.Reaction],
 });
 
 client.commands = new Collection();
@@ -124,7 +124,14 @@ client.on(Events.MessageCreate, async (message) => {
     onMention(client, message, OPENAI_API_KEY)
   }
   else if (message.flags == MessageFlags.IsVoiceMessage && message.attachments.size == 1){
-    TranscribeMessage(client, message, OPENAI_API_KEY)
+    // if message has reactions then return
+    if (message.reactions.cache.size > 0) return;
+
+    // if message has no reactions then react with ✍️ and ❌
+    if (message.reactions.cache.size == 0) {
+      message.react("✍️");
+      TranscribeMessage(client, message, OPENAI_API_KEY)
+    }
   }
 });
 

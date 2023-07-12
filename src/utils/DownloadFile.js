@@ -3,7 +3,6 @@ const log = require('fancy-log');
 const fs = require('fs');
 
 const DownloadFile = (url, name, type) => {
-  log(`Downloading ${url}`);
   return new Promise((resolve, reject) => {
     https.get(url, (res) => {
       const path = `${name}.${type}`;
@@ -13,7 +12,6 @@ const DownloadFile = (url, name, type) => {
     
       writeStream.on("finish", () => {
         writeStream.close();
-        log("Download Completed");
         resolve();
       });
     }).on("error", (err) => {

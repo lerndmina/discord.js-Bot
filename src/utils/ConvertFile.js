@@ -11,7 +11,6 @@ const ConvertFile = async (name, oldType, newType) => {
         reject(err);
       })
       .on('end', () => {
-        log(`Converted ${name}.${oldType} to ${name}.${newType}`);
         resolve();
       })
       .save(`${name}.${newType}`);
