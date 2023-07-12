@@ -32,8 +32,6 @@ const onMention = require("./listeners/onMention");
 const ready = require("./listeners/ready");
 const syncCommands = require("./utils/register-commands");
 
-// Clear the console
-console.clear();
 
 log("Bot is starting...");
 
