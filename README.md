@@ -12,10 +12,12 @@ yarn install
 
 Create a `.env` file with the following environment variables:
 ```
-BOT_TOKEN=your-bot-token
-OWNER_ID=your-discord-user-id
+BOT_TOKEN=
+CLIENT_ID=
+GUILD_ID=
+OWNER_ID=
 PREFIX=!
-OPENAI_API_KEY=your-openai-api-key
+OPENAI_API_KEY=
 ```
 
 Start the bot
