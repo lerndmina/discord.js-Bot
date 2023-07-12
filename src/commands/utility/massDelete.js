@@ -7,6 +7,12 @@ module.exports = {
     .setDescription("Deletes X number of messages from the channel.")
     .addIntegerOption((option) => option.setName("number").setDescription("Number of messages to delete").setRequired(true)),
   async execute(interaction) {
+    // Check user permissions
+    if (interaction.memberPermissions.has("MANAGE_MESSAGES") == false) {
+      await interaction.reply({ content: "You do not have permission to use this command.", ephemeral: true });
+      return;
+    }
+
     var number = interaction.options.getInteger("number");
     if (number > 100) {
       await interaction.reply({ content: "You cannot delete more than 100 messages at a time.", ephemeral: true });

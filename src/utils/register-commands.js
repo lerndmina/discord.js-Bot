@@ -2,13 +2,31 @@ const { REST, Routes } = require("discord.js");
 const fs = require("node:fs");
 const path = require("node:path");
 var log = require("fancy-log");
+const DeleteMessage = require("./DeleteMessage");
+const BasicEmbed = require("./BasicEmbed");
 
 require("dotenv").config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const GUILD_ID = process.env.GUILD_ID;
 const CLIENT_ID = process.env.CLIENT_ID;
 
-const syncCommands = async (message) => {
+const syncCommands = async (client, message, guildId, delGlobal) => {
+  // Construct and prepare an instance of the REST module
+  const rest = new REST().setToken(BOT_TOKEN);
+
+  if (delGlobal) {
+    try {
+      await message.channel.send("Deleting guild's commands...");
+      await rest.put(Routes.applicationGuildCommands(CLIENT_ID, guildId), { body: [] });
+      await message.channel.send("Guild's commands deleted.");
+      return;
+    } catch (error) {
+      log.error(error);
+      await message.channel.send("Error deleting commands.");
+      return;
+    }
+  }
+
   var isError = false;
   const commands = [];
   // Grab all the command files from the commands directory you created earlier
@@ -31,15 +49,12 @@ const syncCommands = async (message) => {
     }
   }
 
-  // Construct and prepare an instance of the REST module
-  const rest = new REST().setToken(BOT_TOKEN);
-
-  // Delete all global commands for the application
+  // Delete all guild commands for the application before deploying new ones
   try {
-    log("Started deleting global commands...");
-    await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), { body: [] });
+    log("Started deleting guild commands...");
+    await rest.put(Routes.applicationGuildCommands(CLIENT_ID, guildId), { body: [] });
   } catch (error) {
-    log.error("Failed to delete global commands:", error);
+    log.error("Failed to delete guild commands:", error);
     isError = true;
     return;
   }
@@ -49,7 +64,7 @@ const syncCommands = async (message) => {
     log(`Started refreshing ${commands.length} application (/) commands.`);
 
     // The put method is used to fully refresh all commands in the guild with the current set
-    const data = await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), { body: commands });
+    const data = await rest.put(Routes.applicationGuildCommands(CLIENT_ID, guildId), { body: commands });
 
     log(`Successfully reloaded ${data.length} application (/) commands.`);
   } catch (error) {
@@ -60,13 +75,9 @@ const syncCommands = async (message) => {
   if (isError) {
     message.reply("There was an error while syncing commands. Please check the console for more information.");
   } else {
-    message.reply(`Successfully synced ${commands.length} commands.`).then((reply) => {
-      // Delete the reply and the original message after 3 seconds
-      setTimeout(() => {
-        DeleteMessage(reply);
-        DeleteMessage(message);
-      }, 3000);
-    });
+    // Get guild from id
+    const guild = await message.client.guilds.fetch(guildId);
+    message.reply({ embeds: [BasicEmbed(client, "Synced Commands", `Successfully synced ${commands.length} commands.`)] });
   }
 };
 

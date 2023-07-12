@@ -1,4 +1,4 @@
-const { Client, Collection, Events, GatewayIntentBits, Partials, Message, MessageType, MessageFlags } = require("discord.js");
+const { Client, Collection, Events, GatewayIntentBits, Partials, MessageType, MessageFlags, ActivityType } = require("discord.js");
 var log = require("fancy-log");
 
 require("dotenv").config();
@@ -32,6 +32,9 @@ const ready = require("./listeners/ready");
 const syncCommands = require("./utils/register-commands");
 const TranscribeMessage = require("./utils/TranscribeMessage");
 const DeleteMessage = require("./utils/DeleteMessage");
+const { args } = require("fluent-ffmpeg/lib/utils");
+const BasicEmbed = require("./utils/BasicEmbed");
+const onMessage = require("./listeners/onMessage");
 
 log("Bot is starting...");
 
@@ -98,39 +101,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 // When the owener sends the command "!sync" in dms the bot will sync the commands
 client.on(Events.MessageCreate, async (message) => {
-  if (message.guildId === "856937743543304203") return;
-
-  if (message.author.bot) return;
-  // if (message.channel.type != ChannelType.DM) return;
-  if (message.content == `${PREFIX}sync`) {
-    if (message.author.id != OWNER_ID) return;
-    syncCommands(message);
-  } else if (message.content == `${PREFIX}reboot`) {
-    if (message.author.id != OWNER_ID) return;
-    await message.reply("Rebooting...");
-    setTimeout(() => {
-      DeleteMessage(message);
-    }, 1000);
-    log("Rebooting...");
-    process.exit(0);
-  } else if (message.type == MessageType.Reply) {
-    const channel = message.channel;
-    const repliedMessage = await channel.messages.fetch(message.reference.messageId);
-    if (repliedMessage.author.id == client.user.id) {
-      onMention(client, message, OPENAI_API_KEY);
-    }
-  } else if (message.content.includes(client.user.id)) {
-    onMention(client, message, OPENAI_API_KEY);
-  } else if (message.flags == MessageFlags.IsVoiceMessage && message.attachments.size == 1) {
-    // if message has reactions then return
-    if (message.reactions.cache.size > 0) return;
-
-    // if message has no reactions then react with ✍️ and ❌
-    if (message.reactions.cache.size == 0) {
-      message.react("✍️");
-      TranscribeMessage(client, message, OPENAI_API_KEY);
-    }
-  }
+  onMessage(client, message);
 });
 
 ready(client);

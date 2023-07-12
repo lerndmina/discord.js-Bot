@@ -1,7 +1,12 @@
+const { DiscordAPIError } = require("discord.js");
+const log = require("fancy-log");
+
 module.exports = async (message) => {
   try {
     await message.delete();
   } catch (error) {
-    log.error(`Failed permission check for deleting a message.`);
+    if (error instanceof DiscordAPIError) {
+      log.error(`Discord API Error: ${error.message}`);
+    }
   }
 };
