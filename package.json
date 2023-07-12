@@ -5,7 +5,7 @@
   "main": "src/Bot.js",
   "scripts": {
     "dev": "npx nodemon",
-    "start": "npx nodemon"
+    "start": "node src/Bot.js"
   },
   "author": "",
   "license": "ISC",
