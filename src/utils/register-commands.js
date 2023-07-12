@@ -1,7 +1,7 @@
 const { REST, Routes } = require("discord.js");
 const fs = require("node:fs");
 const path = require("node:path");
-var log = require('fancy-log');
+var log = require("fancy-log");
 
 require("dotenv").config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -60,15 +60,14 @@ const syncCommands = async (message) => {
   if (isError) {
     message.reply("There was an error while syncing commands. Please check the console for more information.");
   } else {
-  message.reply(`Successfully synced ${commands.length} commands.`)
-    .then((reply) => {
+    message.reply(`Successfully synced ${commands.length} commands.`).then((reply) => {
       // Delete the reply and the original message after 3 seconds
       setTimeout(() => {
-        reply.delete();
-        message.delete();
+        DeleteMessage(reply);
+        DeleteMessage(message);
       }, 3000);
     });
-}
+  }
 };
 
 module.exports = syncCommands;
