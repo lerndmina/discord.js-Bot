@@ -119,7 +119,7 @@ client.on(Events.MessageCreate, async (message) => {
     if (repliedMessage.author.id == client.user.id) {
       onMention(client, message, OPENAI_API_KEY);
     }
-  } else if (message.mentions.has(client.user.id)) {
+  } else if (message.content.includes(client.user.id)) {
     onMention(client, message, OPENAI_API_KEY);
   } else if (message.flags == MessageFlags.IsVoiceMessage && message.attachments.size == 1) {
     // if message has reactions then return
