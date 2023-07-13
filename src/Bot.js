@@ -8,7 +8,7 @@ require("dotenv").config();
 const env = {
   BOT_TOKEN: process.env.BOT_TOKEN,
   OWNER_IDS: process.env.OWNER_IDS,
-  TEST_SERVERS: process.env.GUILD_IDS,
+  TEST_SERVERS: process.env.TEST_SERVERS,
   PREFIX: process.env.PREFIX,
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 };
@@ -16,6 +16,9 @@ const env = {
 const CheckEnvs = require("./utils/CheckEnvs");
 
 log("Bot is starting...");
+
+// Check if the envs are valid
+CheckEnvs(env);
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages],
