@@ -59,7 +59,24 @@ const onMention = async (client, message, apiKey) => {
       .catch((error) => {
         log.error(`OPENAI ERR: ${error}`);
       });
-    message.reply(result.data.choices[0].message);
+
+      var response = result.data.choices[0].message;
+      // if response is larger than 2000 characters, split it into multiple messages
+      if (response.length > 2000) {
+        log.info("Response too long, splitting into multiple messages");
+        var loopcount = 1;
+        var responseArray = response.match(/[\s\S]{1,2000}/g);
+        responseArray.forEach((res) => {
+          if (loopcount == 1) message.reply(res);
+          else
+            message.channel.send({
+              content: res,
+            });
+          loopcount++;
+        });
+        return;
+      }
+    message.reply(response);
   } catch (error) {
     log.error(error);
   }
