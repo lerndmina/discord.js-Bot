@@ -12,8 +12,6 @@ const ready = require("./events/ready/loggedIn");
 const onMessage = require("./events/messageCreate/onMessage");
 const CheckEnvs = require("./utils/CheckEnvs");
 
-// TODO: Migrate all listeners to CommandKit
-
 log("Bot is starting...");
 
 // Check all required environment variables are set
@@ -33,19 +31,4 @@ new CommandKit({
   devUserIds: [OWNER_ID],
 });
 
-// // Handle chat messages
-// client.on(Events.MessageCreate, async (message) => {
-//   onMessage(client, message);
-// });
-
 client.login(BOT_TOKEN);
-
-async function interactionErrror(errorContent, interaction) {
-  const errorMsg = "There was an error while executing this command! Please inform the bot owner.";
-  log.error(errorContent);
-  if (interaction.replied || interaction.deferred) {
-    await interaction.followUp({ content: errorMsg, ephemeral: true });
-  } else {
-    await interaction.reply({ content: errorMsg, ephemeral: true });
-  }
-}
