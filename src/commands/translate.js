@@ -1,6 +1,7 @@
-const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require("discord.js");
+const { ContextMenuCommandBuilder, ApplicationCommandType, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
 const BasicEmbed = require("../utils/BasicEmbed");
+const log = require("fancy-log");
 
 require("dotenv").config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -19,7 +20,25 @@ module.exports = {
     devOnly: true,
   },
   run: async ({ interaction, client, handler }) => {
-    const content = interaction.targetMessage.content;
+    const timestamp = interaction.createdTimestamp;
+    const modalId = `translate-${interaction.user.id}-${timestamp}`;
+
+    const modal = new ModalBuilder().setCustomId(modalId).setTitle("Translate a message")
+
+    const languageInput = new TextInputBuilder().setCustomId("languageInput").setLabel("Enter the language to translate to").setMinLength(1).setMaxLength(100).setStyle(TextInputStyle.Short).setPlaceholder("English")
+
+    const firstActionRow = new ActionRowBuilder().addComponents(languageInput)
+
+    modal.addComponents(firstActionRow)
+
+    await interaction.showModal(modal)
+
+    const filter = (interaction) => interaction.customId === modalId;
+
+    interaction.awaitModalSubmit({ filter, time: 120000}).then(async (modalInteraction) => {
+      const languageValue = modalInteraction.fields.getTextInputValue("languageInput")
+
+      const content = interaction.targetMessage.content;
 
     // Get the number of tokens in the message
     const tokens = content.split(" ").length;
@@ -27,17 +46,17 @@ module.exports = {
     // Check if the message is too long
     const TOKEN_LIMIT = 60;
     if (tokens > TOKEN_LIMIT) {
-      await interaction.reply({ content: `Hey, this system is limited to ${TOKEN_LIMIT} words or less.`, ephemeral: true });
+      await modalInteraction.reply({ content: `Hey, this system is limited to ${TOKEN_LIMIT} words or less.`, ephemeral: true });
       return;
     }
 
     // Tell discord to wait while we process the request
-    await interaction.deferReply({ ephemeral: true });
+    await modalInteraction.deferReply({ ephemeral: true });
 
     // Send the message to OpenAI to be processed
     const response = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: `Correct this to standard English:\n${content}`,
+      prompt: `Translate this into ${languageValue}:\n\n${content}?\n\n1.`,
       temperature: 0,
       max_tokens: 60,
       top_p: 1.0,
@@ -47,9 +66,12 @@ module.exports = {
 
     const aiResponse = response.data.choices[0].text.trim().replace(/\n/g, " ");
 
-    const embed = BasicEmbed(interaction.client, "Grammar Correction", aiResponse, "#0099ff");
+    const embed = BasicEmbed(interaction.client, "Translated Message", `Translated to ${languageValue}:\n\n${aiResponse}`);
 
     // Send the response back to discord
-    interaction.editReply({ embeds: [embed], ephemeral: true });
+    modalInteraction.editReply({ embeds: [embed], ephemeral: true });
+    }).catch((err) => {
+      log(err)
+    })
   },
 };

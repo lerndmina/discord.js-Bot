@@ -1,5 +1,6 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const BasicEmbed = require("../utils/BasicEmbed");
+const permission = PermissionFlagsBits;
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,6 +9,8 @@ module.exports = {
     .addIntegerOption((option) => option.setName("number").setDescription("Number of messages to delete").setRequired(true)),
   options: {
     devOnly: true,
+    userPermissions: [ permission.ManageMessages ],
+    botPermissions: [ permission.ManageMessages ],
   },
   run: async ({ interaction, client, handler }) => {
     // Check user permissions
@@ -36,7 +39,7 @@ module.exports = {
 
     await interaction.channel.bulkDelete(number);
     await interaction.reply({
-      embeds: [BasicEmbed(interaction.client, `Purged Mesages`, `Deleted ${number} messages from ${interaction.channel.name}`)],
+      embeds: [BasicEmbed(interaction.client, `Purged Mesages`, `Deleted ${number} messages in ${interaction.channel.name}`)],
       files: [{ attachment: Buffer.from(messageString), name: "purged_messages.txt" }],
       ephemeral: true,
     });
