@@ -1,15 +1,9 @@
 const { Client, Collection, Events, GatewayIntentBits, Partials, MessageType, MessageFlags, ActivityType, ChannelType } = require("discord.js");
 var log = require("fancy-log");
-const fs = require("fs");
-const path = require("node:path");
-const onMention = require("./onMention");
-const ready = require("./ready");
-const syncCommands = require("../utils/register-commands");
-const TranscribeMessage = require("../utils/TranscribeMessage");
-const DeleteMessage = require("../utils/DeleteMessage");
-const { args } = require("fluent-ffmpeg/lib/utils");
-const BasicEmbed = require("../utils/BasicEmbed");
-const onMessage = require("./onMessage");
+const onMention = require("../../utils/onMention");
+const syncCommands = require("../../utils/unregister-commands");
+const TranscribeMessage = require("../../utils/TranscribeMessage");
+const BasicEmbed = require("../../utils/BasicEmbed");
 
 require("dotenv").config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -19,7 +13,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const BANNED_GUILDS = ["856937743543304203"];
 
-module.exports = async (client, message) => {
+module.exports = async (message, client) => {
   if (BANNED_GUILDS.includes(message.guildId)) return;
 
   if (message.author.bot) return;
@@ -35,34 +29,13 @@ module.exports = async (client, message) => {
     });
   }
 
-  if (message.content.startsWith(`${PREFIX}sync`)) {
+  if (message.content.startsWith(`${PREFIX}unsync`)) {
     if (message.author.id != OWNER_ID) return;
-
-    var args = message.content.slice(PREFIX.length).trim().split(/ +/);
-    args.shift().toLowerCase();
-    if (args.length > 1) {
-      await message.reply({ embeds: [BasicEmbed(client, "Sync Commands", "Invalid arguments.", [{ name: "Usage", value: `${PREFIX}sync [guildId]` }])] });
-      return;
-    }
-
-    if (args.length == 0) {
-      syncCommands(client, message, message.guildId);
-      return;
-    }
-
-    if (args[0] == "clean") {
+    if (message.content.includes("global")) {
       syncCommands(client, message, message.guildId, true);
       return;
     }
-
-    var guildId = args[0];
-    var guild = await client.guilds.cache.get(guildId);
-
-    if (!guild) {
-      await message.reply({ embeds: [BasicEmbed(client, "Sync Commands", "Invalid guild id.", [{ name: "Usage", value: `${PREFIX}sync [guildId]` }])] });
-      return;
-    }
-    syncCommands(client, message, guildId);
+    syncCommands(client, message, message.guildId, false);
 
     // Done
   } else if (message.content == `${PREFIX}reboot`) {

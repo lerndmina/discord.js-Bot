@@ -313,6 +313,11 @@ combined-stream@^1.0.8:
   dependencies:
     delayed-stream "~1.0.0"
 
+commandkit@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/commandkit/-/commandkit-0.0.8.tgz#7f040c33dbfb118ef16326247787aaf4065eb951"
+  integrity sha512-v/albPqiXb9XMyMXc+XLCWEpHw6sK7rC32mAtzttXSwpdxqevAQ8LVYHVwwx2yFfvlPGeBkn6h5jMF50H97oBA==
+
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"

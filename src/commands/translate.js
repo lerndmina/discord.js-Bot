@@ -1,6 +1,6 @@
 const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
-const BasicEmbed = require("../../utils/BasicEmbed");
+const BasicEmbed = require("../utils/BasicEmbed");
 
 require("dotenv").config();
 const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -14,22 +14,20 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 module.exports = {
-  data: new ContextMenuCommandBuilder().setName("Correct Grammar").setType(ApplicationCommandType.Message),
-  async execute(interaction) {
+  data: new ContextMenuCommandBuilder().setName("Translate Message").setType(ApplicationCommandType.Message),
+  options: {
+    devOnly: true,
+  },
+  run: async ({ interaction, client, handler }) => {
     const content = interaction.targetMessage.content;
-
-    // Check if the interaction has been triggered by the bot owner
-    if (!interaction.user.id == OWNER_ID) {
-      await interaction.reply({ content: `Due to OpenAI charging me this interaction is limited to the bot owner at this time.`, ephemeral: true });
-      return;
-    }
 
     // Get the number of tokens in the message
     const tokens = content.split(" ").length;
 
     // Check if the message is too long
-    if (tokens > 30) {
-      await interaction.reply({ content: `Hey, this system is limited to 30 words or less.`, ephemeral: true });
+    const TOKEN_LIMIT = 60;
+    if (tokens > TOKEN_LIMIT) {
+      await interaction.reply({ content: `Hey, this system is limited to ${TOKEN_LIMIT} words or less.`, ephemeral: true });
       return;
     }
 

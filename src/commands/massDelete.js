@@ -1,12 +1,15 @@
 const { SlashCommandBuilder } = require("discord.js");
-const BasicEmbed = require("../../utils/BasicEmbed");
+const BasicEmbed = require("../utils/BasicEmbed");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("massdelete")
     .setDescription("Deletes X number of messages from the channel.")
     .addIntegerOption((option) => option.setName("number").setDescription("Number of messages to delete").setRequired(true)),
-  async execute(interaction) {
+  options: {
+    devOnly: true,
+  },
+  run: async ({ interaction, client, handler }) => {
     // Check user permissions
     if (interaction.memberPermissions.has("MANAGE_MESSAGES") == false) {
       await interaction.reply({ content: "You do not have permission to use this command.", ephemeral: true });
