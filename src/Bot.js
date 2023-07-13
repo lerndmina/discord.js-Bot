@@ -4,18 +4,18 @@ const path = require("path");
 const log = require("fancy-log");
 require("dotenv").config();
 
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const OWNER_ID = process.env.OWNER_ID;
-const TEST_SERVER = process.env.GUILD_ID;
+// Key value array to store the environment variables
+const env = {
+  BOT_TOKEN: process.env.BOT_TOKEN,
+  OWNER_IDS: process.env.OWNER_IDS,
+  TEST_SERVERS: process.env.GUILD_IDS,
+  PREFIX: process.env.PREFIX,
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+};
 
-const ready = require("./events/ready/loggedIn");
-const onMessage = require("./events/messageCreate/onMessage");
 const CheckEnvs = require("./utils/CheckEnvs");
 
 log("Bot is starting...");
-
-// Check all required environment variables are set
-CheckEnvs();
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages],
@@ -27,8 +27,8 @@ new CommandKit({
   commandsPath: path.join(__dirname, "commands"), // The commands directory
   eventsPath: path.join(__dirname, "events"), // The events directory
   validationsPath: path.join(__dirname, "validations"), // Only works if commandsPath is provided
-  devGuildIds: [TEST_SERVER],
-  devUserIds: [OWNER_ID],
+  devGuildIds: [env.TEST_SERVERS],
+  devUserIds: [env.OWNER_IDS],
 });
 
-client.login(BOT_TOKEN);
+client.login(env.BOT_TOKEN);
