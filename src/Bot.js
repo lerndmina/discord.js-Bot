@@ -6,8 +6,6 @@ require("dotenv").config();
 
 const env = require("./utils/FetchEnvs")();
 
-log("Bot is starting...");
-
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages],
   partials: [Partials.Channel, Partials.Message, Partials.Reaction],
@@ -23,6 +21,6 @@ const commandKit = new CommandKit({
   devUserIds: env.OWNER_IDS,
 });
 
-log(`Loaded ${commandKit.commands.length} commands.`);
+log.info(`Logging in to Discord with ${commandKit.commands.length} commands and ${Object.keys(env).length} enviroment variables.`);
 
 client.login(env.BOT_TOKEN);
