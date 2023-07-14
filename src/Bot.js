@@ -23,4 +23,6 @@ const commandKit = new CommandKit({
 
 log.info(`Logging in to Discord with ${commandKit.commands.length} commands and ${Object.keys(env).length} enviroment variables.`);
 
+log("testing 123");
+
 client.login(env.BOT_TOKEN);
