@@ -11,6 +11,10 @@ module.exports = (client, title, description, fields, color) => {
     fields = [];
   }
 
+  if (!color.includes("#")) {
+    // Uppercase first letter and lowercase the rest to comply with EmbedBuilder
+    color = color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
+  }
   const avatarURL = client.user.avatarURL();
 
   var embed = new EmbedBuilder()

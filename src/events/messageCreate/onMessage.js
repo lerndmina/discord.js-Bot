@@ -1,4 +1,14 @@
-const { Client, Collection, Events, GatewayIntentBits, Partials, MessageType, MessageFlags, ActivityType, ChannelType } = require("discord.js");
+const {
+  Client,
+  Collection,
+  Events,
+  GatewayIntentBits,
+  Partials,
+  MessageType,
+  MessageFlags,
+  ActivityType,
+  ChannelType,
+} = require("discord.js");
 var log = require("fancy-log");
 const onMention = require("../../utils/onMention");
 const syncCommands = require("../../utils/unregister-commands");
@@ -39,7 +49,9 @@ module.exports = async (message, client) => {
   // Reboot command
   if (message.content == `${env.PREFIX}reboot`) {
     if (!env.OWNER_IDS.includes(message.author.id)) return;
-    await message.reply({ embeds: [BasicEmbed(client, "Reboot", "Rebooting...")] });
+    await message.reply({
+      embeds: [BasicEmbed(client, "Reboot", "Rebooting...")],
+    });
     log("Rebooting...");
 
     // Set offline
@@ -53,7 +65,9 @@ module.exports = async (message, client) => {
 
   if (message.type == MessageType.Reply) {
     const channel = message.channel;
-    const repliedMessage = await channel.messages.fetch(message.reference.messageId);
+    const repliedMessage = await channel.messages.fetch(
+      message.reference.messageId
+    );
     if (repliedMessage.author.id != client.user.id) return;
     onMention(client, message, env.OPENAI_API_KEY);
     return true;
@@ -61,5 +75,13 @@ module.exports = async (message, client) => {
   if (message.content.includes(client.user.id)) {
     onMention(client, message, env.OPENAI_API_KEY);
     return true;
+  }
+
+  if (
+    message.flags == MessageFlags.IsVoiceMessage &&
+    message.attachments.size == 1
+  ) {
+    if (message.reactions.cache.size > 0) return;
+    message.react("✍️").then(() => message.react("❌"));
   }
 };

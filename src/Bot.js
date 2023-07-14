@@ -1,14 +1,30 @@
-const { Client, Collection, Events, GatewayIntentBits, Partials, MessageType, MessageFlags, ActivityType } = require("discord.js");
+const {
+  Client,
+  Collection,
+  Events,
+  GatewayIntentBits,
+  Partials,
+  MessageType,
+  MessageFlags,
+  ActivityType,
+} = require("discord.js");
 const { CommandKit } = require("commandkit");
 const path = require("path");
 const log = require("fancy-log");
+const mongoose = require("mongoose");
 require("dotenv").config();
 
 const env = require("./utils/FetchEnvs")();
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages],
-  partials: [Partials.Channel, Partials.Message, Partials.Reaction],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildMessageReactions,
+  ],
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
 // Using CommandKit (https://commandkit.underctrl.io)
@@ -21,6 +37,13 @@ const commandKit = new CommandKit({
   devUserIds: env.OWNER_IDS,
 });
 
-log.info(`Logging in to Discord with ${commandKit.commands.length} commands and ${Object.keys(env).length} enviroment variables.`);
+log.info(
+  `Logging in to Discord with ${commandKit.commands.length} commands and ${
+    Object.keys(env).length
+  } enviroment variables.`
+);
 
-client.login(env.BOT_TOKEN);
+mongoose.connect(env.MONGODB_URI).then(() => {
+  log.info("Connected to MongoDB");
+  client.login(env.BOT_TOKEN);
+});

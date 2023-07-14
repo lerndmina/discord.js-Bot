@@ -27,3 +27,4 @@ Thumbs.db
 # Environment variables
 .env
 *.mp3
+*.ogg

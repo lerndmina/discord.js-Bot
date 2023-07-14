@@ -10,6 +10,7 @@ module.exports = () => {
     TEST_SERVERS: process.env.TEST_SERVERS,
     PREFIX: process.env.PREFIX,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    MONGODB_URI: process.env.MONGODB_URI,
   };
 
   for (const key in env) {
@@ -40,13 +41,6 @@ module.exports = () => {
       process.exit(1);
     }
   });
-
-  // Check the token is a valid discord bot token
-  const tokenRegex = /^[a-zA-Z0-9]*\.[a-zA-Z0-9]*\.[a-zA-Z0-9]*$/;
-  if (!tokenRegex.test(env.BOT_TOKEN)) {
-    console.log("Invalid Discord bot token detected. Please check your .env file. Add your bot token to the BOT_TOKEN variable.");
-    process.exit(1);
-  }
 
   return env;
 };
