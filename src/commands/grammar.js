@@ -14,7 +14,9 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 module.exports = {
-  data: new ContextMenuCommandBuilder().setName("Correct Grammar").setType(ApplicationCommandType.Message),
+  data: new ContextMenuCommandBuilder()
+    .setName("Correct Grammar")
+    .setType(ApplicationCommandType.Message),
   options: {
     devOnly: true,
   },
@@ -28,29 +30,32 @@ module.exports = {
     // Check if the message is too long
     const TOKEN_LIMIT = 60;
     if (tokens > TOKEN_LIMIT) {
-      await interaction.reply({ content: `Hey, this system is limited to ${TOKEN_LIMIT} words or less.`, ephemeral: true });
+      await interaction.reply({
+        content: `Hey, this system is limited to ${TOKEN_LIMIT} words or less.`,
+        ephemeral: true,
+      });
       return;
     }
 
-    // // Tell discord to wait while we process the request
-    // await interaction.deferReply({ ephemeral: true });
+    // Tell discord to wait while we process the request
+    await interaction.deferReply({ ephemeral: true });
 
-    // // Send the message to OpenAI to be processed
-    // const response = await openai.createCompletion({
-    //   model: "text-davinci-003",
-    //   prompt: `Correct this to standard English:\n${content}`,
-    //   temperature: 0,
-    //   max_tokens: 60,
-    //   top_p: 1.0,
-    //   frequency_penalty: 0.0,
-    //   presence_penalty: 0.0,
-    // });
+    // Send the message to OpenAI to be processed
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: `Correct this to standard English:\n${content}`,
+      temperature: 0,
+      max_tokens: 60,
+      top_p: 1.0,
+      frequency_penalty: 0.0,
+      presence_penalty: 0.0,
+    });
 
-    // const aiResponse = response.data.choices[0].text.trim().replace(/\n/g, " ");
+    const aiResponse = response.data.choices[0].text.trim().replace(/\n/g, " ");
 
-    // const embed = BasicEmbed(interaction.client, "Grammar Correction", aiResponse, "#0099ff");
+    const embed = BasicEmbed(interaction.client, "Grammar Correction", aiResponse, "#0099ff");
 
-    // // Send the response back to discord
-    // interaction.editReply({ embeds: [embed], ephemeral: true });
+    // Send the response back to discord
+    interaction.editReply({ embeds: [embed], ephemeral: true });
   },
 };

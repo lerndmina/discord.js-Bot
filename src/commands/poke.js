@@ -7,20 +7,29 @@ module.exports = {
     .setDescription("Mention a user")
     .addUserOption((option) =>
       option.setName("user").setDescription("The user to mention").setRequired(true)
+    )
+    .addStringOption((option) =>
+      option.setName("message").setDescription("The message to send").setRequired(false)
     ),
   options: {
-    devOnly: true,
+    devOnly: false,
+    // deleted: true,
   },
   run: async ({ interaction, client, handler }) => {
     const user = interaction.options.getUser("user");
+    const text = interaction.options.getString("message");
 
     embed = BasicEmbed(
       client,
       "Poke! 👉",
-      `Hello ${userMention(user.id)}\n\n ${userMention(interaction.user.id)} poked you!`,
+      `${userMention(interaction.user.id)} poked you! ${text ? `\n\n\`${text}\`` : ""}`,
       "#0099ff"
     );
 
-    await interaction.reply({ embeds: [embed], ephemeral: false });
+    await interaction.reply({
+      content: `Hello ${userMention(user.id)}`,
+      embeds: [embed],
+      ephemeral: false,
+    });
   },
 };
