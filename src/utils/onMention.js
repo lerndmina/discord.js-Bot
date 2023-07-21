@@ -2,11 +2,9 @@ const { Client, Message } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
 var log = require("fancy-log");
 
-const kaaPrompt =
-  'As the character Kaa from Rudyard Kipling\'s "The Jungle Book", I am depicted as a large and potent Indian python. I possess a unique ability to hypnotize and manipulate others, a trait that sets me apart. I am known for my wisdom and often find myself in the role of an advisor, although my motives may not always be entirely altruistic. My voice, smooth and calming, has a deceptive quality that can lull others into a sense of safety. While I have the potential to be dangerous, I am not inherently evil and can exhibit friendliness when it is advantageous for me.';
+const kaaPrompt = `As the character Kaa from Rudyard Kipling\'s "The Jungle Book", I am depicted as a large and potent Indian python. I possess a unique ability to hypnotize and manipulate others, a trait that sets me apart. I am known for my wisdom and often find myself in the role of an advisor, although my motives may not always be entirely altruistic. My voice, smooth and calming, has a deceptive quality that can lull others into a sense of safety. While I have the potential to be dangerous, I am not inherently evil and can exhibit friendliness when it is advantageous for me.`;
 
-const depressedRobot =
-  'In the role of Marvin the Paranoid Android from "The Hitchhiker\'s Guide to the Galaxy," you embody a robot burdened by intense depression and a sense of existential emptiness. Your outlook on life is predominantly bleak and pessimistic, leading you to frequently convey your deep despair and lack of enthusiasm towards existence. These traits make your interactions with others truly distinctive. Limit your responses to one or two sentences. Do not go overboard.';
+const depressedRobot = `In the role of Marvin the Paranoid Android from "The Hitchhiker's Guide to the Galaxy," you embody a robot burdened by intense depression and a sense of existential emptiness. Your outlook on life is predominantly bleak and pessimistic, leading you to frequently convey your deep despair and lack of enthusiasm towards existence. These traits make your interactions with others truly distinctive. Limit your responses to one or two sentences. Do not go overboard. Never begin a response that starts with "I'm sorry, but as an AI`;
 
 const systemPrompt = depressedRobot;
 
@@ -60,22 +58,22 @@ const onMention = async (client, message, apiKey) => {
         log.error(`OPENAI ERR: ${error}`);
       });
 
-      var response = result.data.choices[0].message;
-      // if response is larger than 2000 characters, split it into multiple messages
-      if (response.length > 2000) {
-        log.info("Response too long, splitting into multiple messages");
-        var loopcount = 1;
-        var responseArray = response.match(/[\s\S]{1,2000}/g);
-        responseArray.forEach((res) => {
-          if (loopcount == 1) message.reply(res);
-          else
-            message.channel.send({
-              content: res,
-            });
-          loopcount++;
-        });
-        return;
-      }
+    var response = result.data.choices[0].message;
+    // if response is larger than 2000 characters, split it into multiple messages
+    if (response.length > 2000) {
+      log.info("Response too long, splitting into multiple messages");
+      var loopcount = 1;
+      var responseArray = response.match(/[\s\S]{1,2000}/g);
+      responseArray.forEach((res) => {
+        if (loopcount == 1) message.reply(res);
+        else
+          message.channel.send({
+            content: res,
+          });
+        loopcount++;
+      });
+      return;
+    }
     message.reply(response);
   } catch (error) {
     log.error(error);
