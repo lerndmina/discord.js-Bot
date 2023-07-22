@@ -19,6 +19,7 @@
     "mongoose": "^7.3.4",
     "nodemon": "^3.0.1",
     "openai": "^3.3.0",
+    "tenorjs": "^1.0.10",
     "whisper-nodejs": "^1.0.0"
   },
   "devDependencies": {

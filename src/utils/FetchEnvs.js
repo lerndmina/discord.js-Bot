@@ -11,6 +11,7 @@ module.exports = () => {
     PREFIX: process.env.PREFIX,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     MONGODB_URI: process.env.MONGODB_URI,
+    TENOR_API_KEY: process.env.TENOR_API_KEY,
   };
 
   for (const key in env) {
