@@ -24,7 +24,7 @@ module.exports = {
       option.setName("message").setDescription("The message to send to the AI.").setRequired(true)
     ),
   options: {
-    devOnly: true,
+    devOnly: false,
   },
   run: async ({ interaction, client, handler }) => {
     const env = require("../utils/FetchEnvs")();
