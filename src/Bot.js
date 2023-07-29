@@ -1,13 +1,4 @@
-const {
-  Client,
-  Collection,
-  Events,
-  GatewayIntentBits,
-  Partials,
-  MessageType,
-  MessageFlags,
-  ActivityType,
-} = require("discord.js");
+const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { CommandKit } = require("commandkit");
 const path = require("path");
 const log = require("fancy-log");

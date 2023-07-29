@@ -1,14 +1,4 @@
-const {
-  Client,
-  Collection,
-  Events,
-  GatewayIntentBits,
-  Partials,
-  MessageType,
-  MessageFlags,
-  ActivityType,
-  ChannelType,
-} = require("discord.js");
+const { MessageType, MessageFlags, ActivityType } = require("discord.js");
 var log = require("fancy-log");
 const onMention = require("../../utils/onMention");
 const syncCommands = require("../../utils/unregister-commands");
@@ -65,9 +55,7 @@ module.exports = async (message, client) => {
 
   if (message.type == MessageType.Reply) {
     const channel = message.channel;
-    const repliedMessage = await channel.messages.fetch(
-      message.reference.messageId
-    );
+    const repliedMessage = await channel.messages.fetch(message.reference.messageId);
     if (repliedMessage.author.id != client.user.id) return;
     onMention(client, message, env.OPENAI_API_KEY);
     return true;
@@ -77,10 +65,7 @@ module.exports = async (message, client) => {
     return true;
   }
 
-  if (
-    message.flags == MessageFlags.IsVoiceMessage &&
-    message.attachments.size == 1
-  ) {
+  if (message.flags == MessageFlags.IsVoiceMessage && message.attachments.size == 1) {
     if (message.reactions.cache.size > 0) return;
     message.react("✍️").then(() => message.react("❌"));
   }
