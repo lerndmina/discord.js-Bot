@@ -25,14 +25,14 @@ module.exports = async (reaction, user, client) => {
 
   if (user.bot) return;
 
-  if (user.id != message.author.id) {
+  if (message.flags != MessageFlags.IsVoiceMessage || message.attachments.size != 1) return;
+
+  if (reaction.emoji.name != "✍️" && reaction.emoji.name != "❌") {
     reaction.users.remove(user.id);
     return;
   }
 
-  if (message.flags != MessageFlags.IsVoiceMessage || message.attachments.size != 1) return;
-
-  if (reaction.emoji.name != "✍️" && reaction.emoji.name != "❌") {
+  if (user.id != message.author.id) {
     reaction.users.remove(user.id);
     return;
   }

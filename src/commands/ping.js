@@ -1,7 +1,12 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 module.exports = {
-  data: new SlashCommandBuilder().setName("ping").setDescription("Replies with Pong!").addBooleanOption((option) => option.setName("private").setDescription("Whether to reply privately or not")),
+  data: new SlashCommandBuilder()
+    .setName("ping")
+    .setDescription("Replies with Pong!")
+    .addBooleanOption((option) =>
+      option.setName("private").setDescription("Whether to reply privately or not")
+    ),
   options: {
     devOnly: false,
   },
@@ -13,7 +18,7 @@ module.exports = {
     const latency = currentTime - timestamp;
 
     var wsPing = interaction.client.ws.ping;
-    var deffered = false;
+    var deferred = false;
 
     if (wsPing == -1) {
       var preEmbed = new EmbedBuilder()
@@ -25,7 +30,7 @@ module.exports = {
 
       await new Promise((r) => setTimeout(r, 30000));
       wsPing = interaction.client.ws.ping;
-      deffered = true;
+      deferred = true;
     }
 
     const postEmbed = new EmbedBuilder()
@@ -34,7 +39,7 @@ module.exports = {
       .addFields({ name: `Message Latency`, value: `${latency}ms` })
       .setColor("#0099ff");
 
-    if (deffered) {
+    if (deferred) {
       await interaction.editReply({ embeds: [postEmbed], ephemeral: private });
     } else {
       await interaction.reply({ embeds: [postEmbed], ephemeral: private });
