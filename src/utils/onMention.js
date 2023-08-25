@@ -45,7 +45,7 @@ const onMention = async (client, message, apiKey) => {
     });
     const result = await openai
       .createChatCompletion({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4",
         messages: conversationLog,
         // max_tokens: 256, // limit token usage
       })
