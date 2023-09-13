@@ -1,3 +1,5 @@
+const { MessageMentions } = require("discord.js");
+const log = require("fancy-log");
 const env = require("./FetchEnvs")();
 
 const Tenor = require("tenorjs").client({
@@ -20,6 +22,11 @@ module.exports = async (response) => {
     // Replace the gif_search() with the gif url encoded in markdown with the query as the alt text
     response = response.replace(`gif_search(${query})`, `[${query.replace(/"/g, "")}](${gifUrl})`);
   }
+
+  // Remove all mentions from the response
+  response = response.replace(MessageMentions.UsersPattern, "\\@REMOVED");
+  response = response.replace(MessageMentions.EveryonePattern, "\\@REMOVED");
+  response = response.replace(MessageMentions.RolesPattern, "\\@REMOVED");
 
   return response;
 };
