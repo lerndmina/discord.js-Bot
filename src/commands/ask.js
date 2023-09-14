@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ApplicationCommandType, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, Client } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
 const BasicEmbed = require("../utils/BasicEmbed");
 var log = require("fancy-log");
