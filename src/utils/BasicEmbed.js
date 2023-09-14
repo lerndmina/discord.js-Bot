@@ -1,6 +1,16 @@
 // use the embed builder from discord.js to return an embed
 
-const { EmbedBuilder } = require("discord.js");
+const { Client, EmbedBuilder, Embed } = require("discord.js");
+
+/**
+ *
+ * @param {Client} client
+ * @param {string} title
+ * @param {string} description
+ * @param {[{name: string, value: string, inline: boolean}]} fields
+ * @param {string} color
+ * @returns
+ */
 
 module.exports = (client, title, description, fields, color) => {
   if (color == undefined) color = "Random";
