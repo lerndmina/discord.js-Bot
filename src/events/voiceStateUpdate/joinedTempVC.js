@@ -52,8 +52,6 @@ module.exports = async (oldState, newState) => {
       });
       await newTempList.save();
     }
-
-    log(`Registered ${newChannel.name} as a temp vc.`);
   } catch (error) {
     log.error(error);
   }

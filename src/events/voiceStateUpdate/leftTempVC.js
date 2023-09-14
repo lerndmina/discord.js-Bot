@@ -17,21 +17,20 @@ module.exports = async (oldState, newState) => {
   const vc = vcList.channelIDs.find((vc) => vc === leftChannelID);
   if (!vc) return;
 
-  log(`User left a temp VC: ${vc} in ${guildId} We will now attempt to delete it.`);
-
   const channel = oldState.guild.channels.cache.get(vc);
 
   if (!channel) {
     return;
   }
 
+  // Check if the channel is empty
+  if (channel.members.size > 0) return;
+
   try {
     await channel.delete();
 
     vcList.channelIDs = vcList.channelIDs.filter((vc) => vc !== leftChannelID);
     await vcList.save();
-
-    log(`Deleted ${channel.name} as a temp vc.`);
   } catch (error) {
     log.error(error);
   }
