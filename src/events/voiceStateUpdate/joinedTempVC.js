@@ -2,8 +2,17 @@ const { Client, PresenceStatus, ChannelType, PermissionsBitField } = require("di
 var log = require("fancy-log");
 const GuildNewVC = require("../../models/GuildNewVC");
 const ActiveTempChannels = require("../../models/ActiveTempChannels");
+const BasicEmbed = require("../../utils/BasicEmbed");
 
-module.exports = async (oldState, newState) => {
+/**
+ *
+ * @param {any} oldState
+ * @param {any} newState
+ * @param {Client} client
+ * @returns
+ */
+
+module.exports = async (oldState, newState, client) => {
   if (newState.channelId == null) return;
   joinedChannelId = newState.channelId;
   guildId = newState.guild.id;
@@ -25,6 +34,10 @@ module.exports = async (oldState, newState) => {
     return;
   }
 
+  const joinedChannel = newState.guild.channels.cache.get(joinedChannelId);
+  const maxUsers = joinedChannel.userLimit;
+  const bitrate = joinedChannel.bitrate;
+
   try {
     var newChannel = await newState.guild.channels.create({
       name: `${newState.member.displayName}'s Channel`,
@@ -36,9 +49,23 @@ module.exports = async (oldState, newState) => {
           allow: [PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.ManageRoles],
         },
       ],
+      userLimit: maxUsers,
+      bitrate: bitrate,
     });
 
     await newState.setChannel(newChannel);
+
+    newChannel.send({
+      content: `<@${newState.id}>`,
+      embeds: [
+        BasicEmbed(
+          client,
+          "Hello! 👋",
+          `Welcome to your new channel! \n You can change the channel name and permissions by clicking the settings icon next to the channel name. \n Once the channel is empty, it will be deleted automatically.`,
+          [{ name: "Is something wrong?", value: "Please DM `awild` on Discord.", inline: false }]
+        ),
+      ],
+    });
 
     const tempList = await ActiveTempChannels.findOne({ guildID: guildId });
 
