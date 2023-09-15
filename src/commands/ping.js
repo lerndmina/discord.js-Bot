@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const log = require("fancy-log");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -13,11 +14,14 @@ module.exports = {
   run: async ({ interaction, client, handler }) => {
     var private = interaction.options.getBoolean("private");
 
-    if (private === undefined) private = true;
+    if (private == null) private = true;
 
     const timestamp = interaction.createdTimestamp;
     const currentTime = Date.now();
-    const latency = currentTime - timestamp;
+    var latency = currentTime - timestamp;
+    if (latency < 0) {
+      latency = "< 0";
+    }
 
     var wsPing = interaction.client.ws.ping;
     var deferred = false;
