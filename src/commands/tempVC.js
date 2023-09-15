@@ -7,7 +7,7 @@ const GuildNewVC = require("../models/GuildNewVC");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("temp-vc")
+    .setName("tempvc")
     .setDescription("Create or delete a temporary voice channel for this guild.")
     .addSubcommand((subcommand) => {
       return subcommand

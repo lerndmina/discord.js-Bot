@@ -14,12 +14,12 @@ module.exports = async (message, client) => {
 
   if (message.author.bot) return;
 
-  if (message.content.includes(`${env.PREFIX}embed`)) {
+  if (message.content.includes(`${env.PREFIX}embedtest`)) {
     message.reply({
       embeds: [
         BasicEmbed(client, "Basic Embed", message.content, [
           { name: "Hello", value: "world", inline: true },
-          { name: "Hello", value: "world", inline: true },
+          { name: "world", value: "Hello", inline: true },
         ]),
       ],
     });

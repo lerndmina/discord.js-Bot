@@ -1,8 +1,18 @@
-const { Client, PresenceStatus, ChannelType, PermissionsBitField } = require("discord.js");
+const {
+  Client,
+  PresenceStatus,
+  ChannelType,
+  PermissionsBitField,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require("discord.js");
 var log = require("fancy-log");
 const GuildNewVC = require("../../models/GuildNewVC");
 const ActiveTempChannels = require("../../models/ActiveTempChannels");
 const BasicEmbed = require("../../utils/BasicEmbed");
+const ButtonWrapper = require("../../utils/ButtonWrapper");
+const ms = require("ms");
 
 /**
  *
@@ -52,6 +62,29 @@ module.exports = async (oldState, newState, client) => {
 
     await newState.setChannel(newChannel);
 
+    const buttons = [
+      new ButtonBuilder()
+        .setCustomId(`tempvc-delete`)
+        .setLabel("Delete")
+        .setStyle(ButtonStyle.Danger)
+        .setEmoji("🗑️"),
+      new ButtonBuilder()
+        .setCustomId(`tempvc-rename`)
+        .setLabel("Rename")
+        .setStyle(ButtonStyle.Primary)
+        .setEmoji("📝"),
+      new ButtonBuilder()
+        .setCustomId(`tempvc-invite`)
+        .setLabel("Invite")
+        .setStyle(ButtonStyle.Success)
+        .setEmoji("📨"),
+      new ButtonBuilder()
+        .setCustomId(`tempvc-ban`)
+        .setLabel("Ban")
+        .setStyle(ButtonStyle.Danger)
+        .setEmoji("🔨"),
+    ];
+
     newChannel.send({
       content: `<@${newState.id}>`,
       embeds: [
@@ -59,9 +92,16 @@ module.exports = async (oldState, newState, client) => {
           client,
           "Hello! 👋",
           `Welcome to your new channel! \n You can change the channel name and permissions by clicking the settings icon next to the channel name. \n Once the channel is empty, it will be deleted automatically.`,
-          [{ name: "Is something wrong?", value: "Please DM `awild` on Discord.", inline: false }]
+          [
+            {
+              name: "Control Menu",
+              value: "Please use the buttons below to control the channel you have created.",
+              inline: false,
+            },
+          ]
         ),
       ],
+      components: ButtonWrapper(buttons),
     });
 
     const tempList = await ActiveTempChannels.findOne({ guildID: guildId });
