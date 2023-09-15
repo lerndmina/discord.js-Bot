@@ -11,7 +11,9 @@ module.exports = {
     devOnly: false,
   },
   run: async ({ interaction, client, handler }) => {
-    const private = interaction.options.getBoolean("private");
+    var private = interaction.options.getBoolean("private");
+
+    if (private === undefined) private = true;
 
     const timestamp = interaction.createdTimestamp;
     const currentTime = Date.now();
