@@ -111,18 +111,23 @@ module.exports = {
             BasicEmbed(
               client,
               "Success!",
-              `Assigned \`${channel.name}.\` to a temp vc under ${categoryChannel.name}.`,
+              `Assigned \`${channel.name}.\` to a temp vc under \`${categoryChannel.name}\`.`,
               "#0099ff"
             ),
           ],
           ephemeral: true,
         });
       } catch (error) {
-        log(`Error creating temp vc creator: ${error}`);
+        log(`Error creating temp vc creator: \`\`\`${error}\`\`\``);
 
         await interaction.editReply({
           embeds: [
-            BasicEmbed(client, "Error!", `Error creating temp vc creator: ${error}`, "#0099ff"),
+            BasicEmbed(
+              client,
+              "Error!",
+              `Error creating temp vc creator: \`\`\`${error}\`\`\``,
+              "#0099ff"
+            ),
           ],
           ephemeral: true,
         });
@@ -178,7 +183,12 @@ module.exports = {
 
         await interaction.editReply({
           embeds: [
-            BasicEmbed(client, "Error!", `Error deleting temp vc creator: ${error}`, "#0099ff"),
+            BasicEmbed(
+              client,
+              "Error!",
+              `Error deleting temp vc creator: \`\`\`${error}\`\`\``,
+              "#0099ff"
+            ),
           ],
           ephemeral: true,
         });

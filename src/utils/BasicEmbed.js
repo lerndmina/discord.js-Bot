@@ -25,13 +25,16 @@ module.exports = (client, title, description, fields, color) => {
     // Uppercase first letter and lowercase the rest to comply with EmbedBuilder
     color = color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
   }
-  const avatarURL = client.user.avatarURL();
 
   var embed = new EmbedBuilder()
     .setTitle(title)
     .setDescription(description)
     .setColor(color)
-    .setAuthor({ name: client.user.username, iconURL: avatarURL, url: "https://lerndmina.dev" })
+    .setAuthor({
+      name: client.user.username,
+      iconURL: client.user.avatarURL(),
+      url: "https://lerndmina.dev",
+    })
     .setTimestamp(Date.now());
 
   if (fields != undefined) {

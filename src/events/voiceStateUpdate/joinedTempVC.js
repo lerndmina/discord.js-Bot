@@ -17,12 +17,9 @@ module.exports = async (oldState, newState, client) => {
   joinedChannelId = newState.channelId;
   guildId = newState.guild.id;
 
-  // Check if the channel is a temp VC
   const vcList = await GuildNewVC.findOne({ guildID: guildId });
 
   if (!vcList) return;
-
-  // Check if the channel is a temp VC
 
   const vc = vcList.guildChannelIDs.find((vc) => vc.channelID === joinedChannelId);
 
