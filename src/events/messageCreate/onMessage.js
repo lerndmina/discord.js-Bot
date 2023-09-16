@@ -57,6 +57,8 @@ module.exports = async (message, client) => {
     const channel = message.channel;
     const repliedMessage = await channel.messages.fetch(message.reference.messageId);
     if (repliedMessage.author.id != client.user.id) return;
+    // If message contains a mention for another user, don't reply
+    if (message.mentions.users.size > 0) return;
     onMention(client, message, env.OPENAI_API_KEY);
     return true;
   }
