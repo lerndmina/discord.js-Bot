@@ -7,6 +7,9 @@ require("dotenv").config();
 
 const env = require("./utils/FetchEnvs")();
 
+/**
+ * @param {Client} client
+ */
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
