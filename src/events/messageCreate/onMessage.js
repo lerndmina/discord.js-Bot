@@ -1,14 +1,21 @@
-const { MessageType, MessageFlags, ActivityType } = require("discord.js");
+const { MessageType, MessageFlags, ActivityType, Message, Client } = require("discord.js");
 var log = require("fancy-log");
 const onMention = require("../../utils/onMention");
 const syncCommands = require("../../utils/unregister-commands");
 const TranscribeMessage = require("../../utils/TranscribeMessage");
 const BasicEmbed = require("../../utils/BasicEmbed");
+const { convertCompilerOptionsFromJson } = require("typescript");
 
 const env = require("../../utils/FetchEnvs")();
 
 const BANNED_GUILDS = ["856937743543304203"];
 
+/**
+ *
+ * @param {Message} message
+ * @param {Client} client
+ * @returns
+ */
 module.exports = async (message, client) => {
   if (BANNED_GUILDS.includes(message.guildId)) return;
 
@@ -49,8 +56,12 @@ module.exports = async (message, client) => {
     client.user.setStatus("dnd");
 
     // Cleanly log out of Discord
-    await client.destroy();
-    process.exit(0);
+    client.destroy();
+
+    // Log back in
+    const { Start } = require("../../Bot");
+
+    await Start();
   }
 
   if (message.type == MessageType.Reply) {
