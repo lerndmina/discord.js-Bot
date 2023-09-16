@@ -1,6 +1,11 @@
 const { Client, PresenceStatus, ActivityType } = require("discord.js");
 var log = require("fancy-log");
 
+/**
+ *
+ * @param {Client} c
+ * @param {Client} client
+ */
 module.exports = (c, client) => {
   log(`Logged in as ${client.user.tag}`);
 

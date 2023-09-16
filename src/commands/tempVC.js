@@ -35,6 +35,7 @@ module.exports = {
   options: {
     devOnly: false,
     deleted: false,
+    guildOnly: true,
     userPermissions: ["Administrator"],
   },
 

@@ -13,7 +13,8 @@ module.exports = {
     ),
   options: {
     devOnly: false,
-    // deleted: true,
+    deleted: false,
+    guildOnly: true,
   },
   run: async ({ interaction, client, handler }) => {
     const user = interaction.options.getUser("user");
