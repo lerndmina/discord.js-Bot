@@ -38,7 +38,7 @@ module.exports = (client, title, description, fields, color) => {
     "🤖 Bot mode: Beep Boop Boop Bleep. Translation: Have a nice day!",
     "💻 Created for chuckles, not for chores.",
     "🤖 Don't fear my humor... It's all in the programming!",
-    "🤖 Beep. Boop. Bot. Chuckles",
+    "🤖 Beep. Boop. I'm A Bot.",
     "🤖 Beep Boop! Another pointless task completed.",
     "🤖 This task, like everything else, shall pass...",
   ];
@@ -53,7 +53,7 @@ module.exports = (client, title, description, fields, color) => {
       url: "https://lerndmina.dev",
     })
     .setTimestamp(Date.now())
-    .setFooter({ text: ` ` });
+    .setFooter({ text: botMessages[Math.floor(Math.random() * botMessages.length)] });
 
   if (fields != undefined) {
     fields.forEach((field) => {
