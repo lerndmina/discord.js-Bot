@@ -21,10 +21,27 @@ module.exports = (client, title, description, fields, color) => {
     fields = [];
   }
 
+  if (description == "*") description = "‎";
+
   if (!color.includes("#")) {
     // Uppercase first letter and lowercase the rest to comply with EmbedBuilder
     color = color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
   }
+
+  const botMessages = [
+    "🤖 Humor capacity overload. Please stand by...",
+    "🤖 Don't mind me. Just your friendly neighbourhood bot.",
+    "🤖 Turning caffeine into code.",
+    "⚡ Powered by logic, love and a dash of lunacy.",
+    "🤖 Bot code cracking humor from dark.",
+    "💾 Loading punchline... error. Ah, who cares?",
+    "🤖 Bot mode: Beep Boop Boop Bleep. Translation: Have a nice day!",
+    "💻 Created for chuckles, not for chores.",
+    "🤖 Don't fear my humor... It's all in the programming!",
+    "🤖 Beep. Boop. Bot. Chuckles",
+    "🤖 Beep Boop! Another pointless task completed.",
+    "🤖 This task, like everything else, shall pass...",
+  ];
 
   var embed = new EmbedBuilder()
     .setTitle(title)
@@ -35,7 +52,8 @@ module.exports = (client, title, description, fields, color) => {
       iconURL: client.user.avatarURL(),
       url: "https://lerndmina.dev",
     })
-    .setTimestamp(Date.now());
+    .setTimestamp(Date.now())
+    .setFooter({ text: ` ` });
 
   if (fields != undefined) {
     fields.forEach((field) => {
