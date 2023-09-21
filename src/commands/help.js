@@ -12,8 +12,6 @@ module.exports = {
     deleted: false,
   },
   run: async ({ interaction, client, handler }) => {
-    console.log(await handler.commands);
-
     await interaction.deferReply();
 
     const localCommands = GetAllFiles(path.join(__dirname, ""));
@@ -27,8 +25,15 @@ module.exports = {
 
     // Get all commands into a format [categoryName, {commandName: string}]
     for (const command of localCommands) {
-      const commandCategory = command.category || "main";
+      var commandCategory = command.category;
       const commandName = command.name;
+
+      if (!commandCategory) {
+        log.warn(
+          `Command ${commandName.toUpperCase()} does not have a category! Spooky! Skipping...`
+        );
+        continue;
+      }
 
       // if command category does not exist in commands object, create it
       if (!commands[command.category]) {
@@ -91,6 +96,7 @@ module.exports = {
         });
       }
     }
+
     const embed = BasicEmbed(client, "Help", "To run commands, use `/(command-Name)`\n", fields);
 
     interaction.editReply({
