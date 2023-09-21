@@ -8,7 +8,7 @@ const BasicEmbed = require("../utils/BasicEmbed");
 module.exports = {
   data: new SlashCommandBuilder().setName("help").setDescription("Shows help!"),
   options: {
-    devOnly: true,
+    devOnly: false,
     deleted: false,
   },
   run: async ({ interaction, client, handler }) => {
