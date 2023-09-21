@@ -324,7 +324,7 @@ color-support@^1.1.3:
   resolved "https://registry.yarnpkg.com/color-support/-/color-support-1.1.3.tgz#93834379a1cc9a0c61f82f52f0d04322251bd5a2"
   integrity sha512-qiBjkpbMLO/HL68y+lh4q0/O1MZFj2RX6X/KmMa3+gJD3z+WwI1ZzDHysvqHGS3mP6mznPckpXmw1nI9cJjyRg==
 
-colors@^1.3.3:
+colors@^1.3.3, colors@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
   integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
@@ -336,10 +336,12 @@ combined-stream@^1.0.8:
   dependencies:
     delayed-stream "~1.0.0"
 
-commandkit@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/commandkit/-/commandkit-0.0.8.tgz#7f040c33dbfb118ef16326247787aaf4065eb951"
-  integrity sha512-v/albPqiXb9XMyMXc+XLCWEpHw6sK7rC32mAtzttXSwpdxqevAQ8LVYHVwwx2yFfvlPGeBkn6h5jMF50H97oBA==
+commandkit@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/commandkit/-/commandkit-0.1.2.tgz#02546f05a75740da0731a8031665e181c312e3f6"
+  integrity sha512-0qn0vzaAz07rZ8voieQLLIBEZ5R/+jpj/ppnfmTMbpApteeYIZThyUzBxSqwK2Z5WqUwNx5dwbBJKNUmxXxF4A==
+  dependencies:
+    colors "^1.4.0"
 
 concat-map@0.0.1:
   version "0.0.1"

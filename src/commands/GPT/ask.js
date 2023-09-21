@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, Client } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
-const BasicEmbed = require("../utils/BasicEmbed");
+const BasicEmbed = require("../../utils/BasicEmbed");
 var log = require("fancy-log");
 
 require("dotenv").config();
@@ -9,27 +9,22 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const configuration = new Configuration({
   apiKey: OPENAI_API_KEY,
 });
-const systemPrompt = require("../utils/SystemPrompt");
-const ResponsePlugins = require("../utils/ResponsePlugins");
+const systemPrompt = require("../../utils/SystemPrompt");
+const ResponsePlugins = require("../../utils/ResponsePlugins");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("whatis")
-    .setDescription("Ask the AI about this object")
+    .setName("ask")
+    .setDescription("Ask the AI without previous chat messages.")
     .addStringOption((option) =>
-      option
-        .setName("object")
-        .setDescription("The object for the AI to describe.")
-        .setRequired(true)
-        .setMaxLength(15)
+      option.setName("message").setDescription("The message to send to the AI.").setRequired(true)
     ),
   options: {
     devOnly: false,
-    deleted: false,
   },
   run: async ({ interaction, client, handler }) => {
-    const env = require("../utils/FetchEnvs")();
-    const requestMessage = interaction.options.getString("object");
+    const env = require("../../utils/FetchEnvs")();
+    const requestMessage = interaction.options.getString("message");
 
     const configuration = new Configuration({
       apiKey: env.OPENAI_API_KEY,
@@ -37,13 +32,7 @@ module.exports = {
 
     const openai = new OpenAIApi(configuration);
 
-    let conversation = [
-      {
-        role: "system",
-        content:
-          "You are an AI, you will be presented with a name or object. You must come up with a funny and incorrect description for the prompt. Please keep it short. You do not need to mention the object name in the response.",
-      },
-    ];
+    let conversation = [{ role: "system", content: systemPrompt }];
 
     conversation.push({
       role: "user",
@@ -65,12 +54,9 @@ module.exports = {
         log.error(`OPENAI ERR: ${error}`);
       });
 
-    const aiResponse = response.data.choices[0].message.content;
+    const aiResponse = await ResponsePlugins(response.data.choices[0].message.content);
 
     // Send the response back to discord
-    interaction.editReply({
-      embeds: [BasicEmbed(client, `Object: ${requestMessage}`, `\`\`\`${aiResponse}\`\`\``)],
-      ephemeral: false,
-    });
+    interaction.editReply({ content: aiResponse, ephemeral: false });
   },
 };

@@ -5,7 +5,7 @@ const {
   ActionRowBuilder,
 } = require("discord.js");
 const log = require("fancy-log");
-const BasicEmbed = require("../utils/BasicEmbed");
+const BasicEmbed = require("../../utils/BasicEmbed");
 
 module.exports = {
   data: new SlashCommandBuilder()

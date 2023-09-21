@@ -1,6 +1,6 @@
 const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
-const BasicEmbed = require("../utils/BasicEmbed");
+const BasicEmbed = require("../../utils/BasicEmbed");
 
 require("dotenv").config();
 const BOT_TOKEN = process.env.BOT_TOKEN;

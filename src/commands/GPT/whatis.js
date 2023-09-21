@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, Client } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
-const BasicEmbed = require("../utils/BasicEmbed");
+const BasicEmbed = require("../../utils/BasicEmbed");
 var log = require("fancy-log");
 
 require("dotenv").config();
@@ -9,22 +9,27 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const configuration = new Configuration({
   apiKey: OPENAI_API_KEY,
 });
-const systemPrompt = require("../utils/SystemPrompt");
-const ResponsePlugins = require("../utils/ResponsePlugins");
+const systemPrompt = require("../../utils/SystemPrompt");
+const ResponsePlugins = require("../../utils/ResponsePlugins");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("ask-basic")
-    .setDescription("Ask the AI without previous chat messages. And no system prompt. Go wild!")
+    .setName("whatis")
+    .setDescription("Ask the AI about this object")
     .addStringOption((option) =>
-      option.setName("message").setDescription("The message to send to the AI.").setRequired(true)
+      option
+        .setName("object")
+        .setDescription("The object for the AI to describe.")
+        .setRequired(true)
+        .setMaxLength(15)
     ),
   options: {
     devOnly: false,
+    deleted: false,
   },
   run: async ({ interaction, client, handler }) => {
-    const env = require("../utils/FetchEnvs")();
-    const requestMessage = interaction.options.getString("message");
+    const env = require("../../utils/FetchEnvs")();
+    const requestMessage = interaction.options.getString("object");
 
     const configuration = new Configuration({
       apiKey: env.OPENAI_API_KEY,
@@ -35,7 +40,8 @@ module.exports = {
     let conversation = [
       {
         role: "system",
-        content: "You are a helpful assistant, interacting with your humans through Discord.",
+        content:
+          "You are an AI, you will be presented with a name or object. You must come up with a funny and incorrect description for the prompt. Please keep it short. You do not need to mention the object name in the response.",
       },
     ];
 
@@ -62,6 +68,9 @@ module.exports = {
     const aiResponse = response.data.choices[0].message.content;
 
     // Send the response back to discord
-    interaction.editReply({ content: aiResponse, ephemeral: false });
+    interaction.editReply({
+      embeds: [BasicEmbed(client, `Object: ${requestMessage}`, `\`\`\`${aiResponse}\`\`\``)],
+      ephemeral: false,
+    });
   },
 };

@@ -1,9 +1,9 @@
-const { SlashCommandBuilder, ChannelType } = require("discord.js");
-const BasicEmbed = require("../utils/BasicEmbed");
+const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require("discord.js");
+const BasicEmbed = require("../../utils/BasicEmbed");
 var log = require("fancy-log");
 const { Channel } = require("diagnostics_channel");
 
-const GuildNewVC = require("../models/GuildNewVC");
+const GuildNewVC = require("../../models/GuildNewVC");
 
 module.exports = {
   data: new SlashCommandBuilder()

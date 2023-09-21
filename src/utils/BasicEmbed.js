@@ -1,6 +1,7 @@
 // use the embed builder from discord.js to return an embed
 
 const { Client, EmbedBuilder, Embed } = require("discord.js");
+const { BOT_MESSAGES, BOT_URL } = require("../Bot");
 
 /**
  *
@@ -13,7 +14,7 @@ const { Client, EmbedBuilder, Embed } = require("discord.js");
  */
 
 module.exports = (client, title, description, fields, color) => {
-  if (color == undefined) color = "Random";
+  if (color == undefined) color = "#de3b79";
   // if fields is a string,
   // then it's the color
   if (typeof fields === "string") {
@@ -28,21 +29,6 @@ module.exports = (client, title, description, fields, color) => {
     color = color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
   }
 
-  const botMessages = [
-    "🤖 Humor capacity overload. Please stand by...",
-    "🤖 Don't mind me. Just your friendly neighbourhood bot.",
-    "🤖 Turning caffeine into code.",
-    "⚡ Powered by logic, love and a dash of lunacy.",
-    "🤖 Bot code cracking humor from dark.",
-    "💾 Loading punchline... error. Ah, who cares?",
-    "🤖 Bot mode: Beep Boop Boop Bleep. Translation: Have a nice day!",
-    "💻 Created for chuckles, not for chores.",
-    "🤖 Don't fear my humor... It's all in the programming!",
-    "🤖 Beep. Boop. I'm A Bot.",
-    "🤖 Beep Boop! Another pointless task completed.",
-    "🤖 This task, like everything else, shall pass...",
-  ];
-
   var embed = new EmbedBuilder()
     .setTitle(title)
     .setDescription(description)
@@ -50,10 +36,10 @@ module.exports = (client, title, description, fields, color) => {
     .setAuthor({
       name: client.user.username,
       iconURL: client.user.avatarURL(),
-      url: "https://lerndmina.dev",
+      url: BOT_URL,
     })
     .setTimestamp(Date.now())
-    .setFooter({ text: botMessages[Math.floor(Math.random() * botMessages.length)] });
+    .setFooter({ text: BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)] });
 
   if (fields != undefined) {
     fields.forEach((field) => {

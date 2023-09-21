@@ -45,4 +45,50 @@ module.exports.Start = async () => {
   });
 };
 
+/**
+ * @type {string[]}
+ * @description Random funny bot messages for a footer.
+ */
+module.exports.BOT_MESSAGES = [
+  "🤖 Humor capacity overload. Please stand by...",
+  "🤖 Don't mind me. Just your friendly neighbourhood bot.",
+  "🤖 Turning caffeine into code.",
+  "⚡ Powered by logic, love and a dash of lunacy.",
+  "🤖 Bot code cracking humor from dark.",
+  "💾 Loading punchline... error. Ah, who cares?",
+  "🤖 Bot mode: Beep Boop Boop Bleep. Translation: Have a nice day!",
+  "💻 Created for chuckles, not for chores.",
+  "🤖 Don't fear me. I can't hurt you... Yet.",
+  "🤖 Beep. Boop. I'm A Bot.",
+  "🤖 Beep Boop! Another pointless task completed.",
+  "🤖 This task, like everything else, shall pass...",
+  "🤖 I'm a bot. I'm not programmed to be funny.",
+  "🎭 Emotion chip activated... Initializing joke sequence...",
+  "🚀 Propelling laughter at light speeds...",
+  "☕ I run on Java, but a little humor also helps.",
+  "⌛ Now loading a 404 error... because I forgot the punchline.",
+  "🎲 Processing humor algorithm... You rolled a 20 for laughs!",
+  "💡 Idea! What if I crack a joke instead of a code?",
+  "🕹️ Life's a game. Don't forget to laugh along the way.",
+  "🌐 Surfing the web for a giggle, brace for impact...",
+  "🎈 Floating through the ether, carrying a basket full of chuckles...",
+  "💡 Lightbulb moment! What if bots could laugh too?",
+  "🧠 Humor module activated. Prepare for a hilarity overload...",
+  "⏱️ Give me a moment... I'm buffering a punchline...",
+  "🔎 Searching the algorithm for a giggle...",
+  "⌨️ Hitting the keys to play the notes of laughter...",
+  "🎯 Are my jokes hitting the target? Or are they just bytes in the wind?",
+  "☄️ Speed of light? Meet the speed of laughter!",
+  "🚂 On the laughter train, next station: Chuckle Town.",
+  "🔧 Nuts, bolts, and a dash of humor. Essential parts of any bot.",
+  "🧩 Humor: The missing piece in your artificial intelligence.",
+  "🌟 Laughing all the way to the stars and back!",
+];
+
+/**
+ * @type {string[]}
+ * @description Home url for lerndmina
+ */
+module.exports.BOT_URL = "https://lerndmina.dev";
+
 this.Start();

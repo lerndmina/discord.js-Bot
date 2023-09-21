@@ -1,9 +1,12 @@
-const { Client, Message } = require("discord.js");
+const { Client, Message, EmbedBuilder } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
 var log = require("fancy-log");
 const FetchEnvs = require("./FetchEnvs");
 
 const systemPrompt = require("./SystemPrompt");
+const BasicEmbed = require("./BasicEmbed");
+const { BOT_URL, BOT_MESSAGES } = require("../Bot");
+const { error } = require("console");
 
 const onMention = async (client, message, apiKey) => {
   const configuration = new Configuration({
@@ -13,8 +16,12 @@ const onMention = async (client, message, apiKey) => {
   const openai = new OpenAIApi(configuration);
 
   let conversationLog = [{ role: "system", content: systemPrompt }];
+
+  const reply = await message.reply({
+    embeds: [BasicEmbed(client, "⌛Thinking...", "Requesting data from OpenAI")],
+  });
+
   try {
-    await message.channel.sendTyping();
     let prevMessages = await message.channel.messages.fetch({ limit: 15 });
     prevMessages.reverse();
 
@@ -43,6 +50,7 @@ const onMention = async (client, message, apiKey) => {
         });
       }
     });
+
     const result = await openai
       .createChatCompletion({
         model: "gpt-4",
@@ -51,6 +59,11 @@ const onMention = async (client, message, apiKey) => {
       })
       .catch((error) => {
         log.error(`OPENAI ERR: ${error}`);
+
+        reply.edit({
+          embeds: [BasicEmbed(client, "🔗 Error", "There was an error with the request.")],
+        });
+        return;
       });
 
     var response = result.data.choices[0].message.content;
@@ -60,12 +73,25 @@ const onMention = async (client, message, apiKey) => {
       response = response.substring(0, 2000);
     }
 
-    await message.channel.sendTyping();
+    reply.edit({ embeds: [BasicEmbed(client, "⌛Thinking...", "Parsing response...")] });
     response = await require("./ResponsePlugins")(response);
+    const linkExists = /\[(.*?)\]\((.*?\.gif)\)/.test(response);
+    if (linkExists) {
+      reply.edit({
+        embeds: [],
+        content: response,
+      });
+      return;
+    }
 
-    message.reply(response);
+    reply.edit({ embeds: [BasicEmbed(client, "🤖AI Response", response)] });
+
+    log(response);
   } catch (error) {
     log.error(error);
+    reply.edit({
+      embeds: [BasicEmbed(client, "🐞 Error", "There was an error when parsing the response.")],
+    });
   }
 };
 

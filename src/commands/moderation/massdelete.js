@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const BasicEmbed = require("../utils/BasicEmbed");
+const BasicEmbed = require("../../utils/BasicEmbed");
 const permission = PermissionFlagsBits;
 
 module.exports = {
@@ -12,8 +12,8 @@ module.exports = {
   options: {
     devOnly: false,
     guildOnly: true,
-    userPermissions: [permission.ManageMessages],
-    botPermissions: [permission.ManageMessages],
+    userPermissions: ["ManageMessages"],
+    botPermissions: ["ManageMessages"],
   },
   run: async ({ interaction, client, handler }) => {
     // Check user permissions
@@ -55,7 +55,7 @@ module.exports = {
         BasicEmbed(
           interaction.client,
           `Purged Mesages`,
-          `Deleted ${number} messages in ${interaction.channel.name}`
+          `Deleted ${number} messages in <#${interaction.channel.id}>`
         ),
       ],
       files: [{ attachment: Buffer.from(messageString), name: "purged_messages.txt" }],

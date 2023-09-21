@@ -7,7 +7,7 @@ const {
   ActionRowBuilder,
 } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
-const BasicEmbed = require("../utils/BasicEmbed");
+const BasicEmbed = require("../../utils/BasicEmbed");
 const log = require("fancy-log");
 
 require("dotenv").config();

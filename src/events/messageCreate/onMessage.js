@@ -21,13 +21,24 @@ module.exports = async (message, client) => {
 
   if (message.author.bot) return;
 
-  if (message.content.includes(`${env.PREFIX}embedtest`)) {
+  if (message.content.startsWith(`${env.PREFIX}embedtest`)) {
+    if (!env.OWNER_IDS.includes(message.author.id)) return;
+
     message.reply({
       embeds: [
-        BasicEmbed(client, "Basic Embed", message.content, [
-          { name: "Hello", value: "world", inline: true },
-          { name: "world", value: "Hello", inline: true },
-        ]),
+        BasicEmbed(
+          client,
+          "Title",
+          "Description",
+          [
+            {
+              name: "Fields",
+              value: '```js\n[{ name: "Hello", value: "World", inline: true }]```',
+              inline: true,
+            },
+          ],
+          "Random"
+        ),
       ],
     });
   }
