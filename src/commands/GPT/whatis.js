@@ -21,7 +21,7 @@ module.exports = {
         .setName("object")
         .setDescription("The object for the AI to describe.")
         .setRequired(true)
-        .setMaxLength(15)
+        .setMaxLength(30)
     ),
   options: {
     devOnly: false,
