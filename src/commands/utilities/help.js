@@ -14,7 +14,7 @@ module.exports = {
   run: async ({ interaction, client, handler }) => {
     await interaction.deferReply();
 
-    const localCommands = GetAllFiles(path.join(__dirname, ""));
+    const localCommands = GetAllFiles(path.join(__dirname, "../"));
 
     /**
      * @type {Promise<Collection<Snowflake, ApplicationCommand>>}
