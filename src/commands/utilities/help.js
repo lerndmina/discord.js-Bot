@@ -1,9 +1,9 @@
 const { SlashCommandBuilder, ApplicationCommand, Snowflake, Collection } = require("discord.js");
 const log = require("fancy-log");
-const { getCommandKit } = require("../Bot");
-const GetAllFiles = require("../utils/GetAllFiles");
+const { getCommandKit } = require("../../Bot");
+const GetAllFiles = require("../../utils/GetAllFiles");
 const path = require("path");
-const BasicEmbed = require("../utils/BasicEmbed");
+const BasicEmbed = require("../../utils/BasicEmbed");
 
 module.exports = {
   data: new SlashCommandBuilder().setName("help").setDescription("Shows help!"),
