@@ -4,7 +4,7 @@ while true; do
     if [ -f $FILE ]; then
         echo "$FILE found, starting Bot..."
         echo "Bot started @ $(date)" >>restart.log
-        git pull && yarn && yarn dev
+        git pull && yarn && yarn upgrade && yarn dev
         echo "Bot detected in a crashed or stopped state, beginning restart process..."
         echo "Bot stoped or crashed @ $(date)" >>restart.log
         echo "Restarting in 3 seconds"
