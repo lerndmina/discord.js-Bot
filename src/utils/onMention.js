@@ -85,13 +85,18 @@ const onMention = async (client, message, apiKey) => {
     }
 
     reply.edit({ embeds: [BasicEmbed(client, "🤖AI Response", response)] });
-
-    log(response);
   } catch (error) {
     log.error(error);
-    reply.edit({
-      embeds: [BasicEmbed(client, "🐞 Error", "There was an error when parsing the response.")],
-    });
+    reply
+      .edit({
+        embeds: [BasicEmbed(client, "🐞 Error", "There was an error when parsing the response.")],
+      })
+      .catch((error) => {
+        log.error(
+          `There was an error occured while editing the message. It has probably been deleted.`
+        );
+        log.error(error);
+      });
   }
 };
 
