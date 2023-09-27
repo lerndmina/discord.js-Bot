@@ -47,7 +47,7 @@ module.exports = async (oldState, newState, client) => {
 
   try {
     var newChannel = await newState.guild.channels.create({
-      name: `${newState.member.displayName}'s Channel`,
+      name: `• 🔊 ${newState.member.displayName}`,
       type: ChannelType.GuildVoice,
       parent: category.id,
       permissionOverwrites: [
