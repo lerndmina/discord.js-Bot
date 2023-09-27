@@ -13,14 +13,19 @@ const {
   TextInputBuilder,
   ActionRowBuilder,
   UserSelectMenuBuilder,
-  Base,
 } = require("discord.js");
 const log = require("fancy-log");
 const BasicEmbed = require("../../utils/BasicEmbed");
 const ms = require("ms");
 
-const banUserMenuId = "tempvc-ban-user-menu";
-
+const interactionBanUser = "tempvc-ban-user-menu";
+const interactionPostBanMenu = "tempvc-ban";
+const interactionLimitUsers = "tempvc-limit";
+const interactionSendInvite = "tempvc-invite";
+const interactionRenameVC = "tempvc-rename";
+const interactionDeleteVC_NO = "tempvc-delete-no";
+const interactionDeleteVC_YES = "tempvc-delete-yes";
+const interactionDeleteVC_REQUEST = "tempvc-delete";
 /**
  *
  * @param {BaseInteraction}
@@ -50,38 +55,48 @@ module.exports = async (interaction, client) => {
 
   const channel = interaction.channel;
   const user = interaction.user;
+  try {
+    switch (interaction.customId) {
+      case interactionDeleteVC_REQUEST:
+        DeleteChannelButtons(interaction, channel, user);
+        break;
+      case interactionDeleteVC_YES:
+        /**
+         * Kick all members from the channel, we delete it somewhere else
+         * @file /src/events/voiceStatUpdate/leftTempVC.js
+         */
+        channel.members.forEach((member) => {
+          member.voice.setChannel(null);
+        });
 
-  switch (interaction.customId) {
-    case "tempvc-delete":
-      DeleteChannelButtons(interaction, channel, user);
-      break;
-    case "tempvc-delete-yes":
-      // Kick all members from the channel, we delete it somewhere else (see leftTempVC.js)
-      channel.members.forEach((member) => {
-        member.voice.setChannel(null);
-      });
+        break;
 
-      break;
+      case interactionDeleteVC_NO:
+        interaction.message.delete();
+        break;
 
-    case "tempvc-delete-no":
-      interaction.message.delete();
-      break;
+      case interactionRenameVC:
+        RenameVCModal(interaction, channel, user);
+        break;
 
-    case "tempvc-rename":
-      RenameVCModal(interaction, channel, user);
-      break;
+      case interactionSendInvite:
+        SendInvite(interaction, channel, user);
+        break;
 
-    case "tempvc-invite":
-      SendInvite(interaction, channel, user);
-      break;
+      case interactionPostBanMenu:
+        PostBanUserDropdown(interaction, channel, user);
+        break;
 
-    case "tempvc-ban":
-      PostBanUserDropdown(interaction, channel, user);
-      break;
+      case interactionBanUser:
+        BanUserFromChannel(interaction, channel, user);
+        break;
 
-    case banUserMenuId:
-      BanUserFromChannel(interaction, channel, user);
-      break;
+      case interactionLimitUsers:
+        LimitUsers(interaction, channel, user);
+        break;
+    }
+  } catch (error) {
+    log.error(`Error handling interaction: ${error}`);
   }
 };
 
@@ -223,7 +238,7 @@ async function PostBanUserDropdown(interaction, channel, user) {
   const members = channel.members;
 
   const userMenu = new UserSelectMenuBuilder()
-    .setCustomId(banUserMenuId)
+    .setCustomId(interactionBanUser)
     .setPlaceholder("Select a user to ban")
     .setMinValues(1)
     .setMaxValues(5);
@@ -267,4 +282,86 @@ function BanUserFromChannel(interaction, channel, user) {
     embeds: [BasicEmbed(interaction.client, "Banned!", `Banned ${count} users from this channel.`)],
     ephemeral: true,
   });
+}
+
+function LimitUsers(interaction, channel, user) {
+  const modalId = "tempvc-limit-modal";
+
+  const modal = new ModalBuilder().setCustomId(modalId).setTitle("Limit your max users");
+
+  const limitInput = new TextInputBuilder()
+    .setCustomId("tempvc-limit-input")
+    .setLabel("Enter the new limit")
+    .setMinLength(1)
+    .setMaxLength(2)
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder("1");
+
+  const actionRow = new ActionRowBuilder().addComponents(limitInput);
+
+  modal.addComponents(actionRow);
+
+  interaction.showModal(modal);
+
+  const interactionFilter = (interaction) => interaction.customId === modalId;
+
+  interaction
+    .awaitModalSubmit({ filter: interactionFilter, time: 120000 })
+    .then(async (modalInteraction) => {
+      const limitValue = modalInteraction.fields.getTextInputValue("tempvc-limit-input");
+
+      // Check if the limit is a number
+      if (isNaN(limitValue)) {
+        modalInteraction.reply({
+          embeds: [
+            BasicEmbed(interaction.client, "Error!", `The limit value must be a number!`, "Red"),
+          ],
+          ephemeral: true,
+        });
+        return;
+      }
+
+      if (limitValue <= 0) {
+        modalInteraction.reply({
+          embeds: [
+            BasicEmbed(
+              interaction.client,
+              "Error!",
+              `The limit value must be greater than \`0\`!`,
+              "Red"
+            ),
+          ],
+          ephemeral: true,
+        });
+        return;
+      }
+
+      try {
+        await channel.setUserLimit(limitValue);
+      } catch (error) {
+        modalInteraction.reply({
+          embeds: [
+            BasicEmbed(
+              interaction.client,
+              "Error!",
+              `There was an error setting the limit: \`\`\`${error}\`\`\``,
+              "Red"
+            ),
+          ],
+          ephemeral: true,
+        });
+        return;
+      }
+
+      await modalInteraction.reply({
+        embeds: [
+          BasicEmbed(
+            interaction.client,
+            `Limit Set!`,
+            `You set the user limit of this channel to \`${limitValue}\``
+          ),
+        ],
+        ephemeral: true,
+      });
+    });
 }

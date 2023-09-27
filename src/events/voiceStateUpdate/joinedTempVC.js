@@ -83,6 +83,11 @@ module.exports = async (oldState, newState, client) => {
         .setLabel("Ban")
         .setStyle(ButtonStyle.Danger)
         .setEmoji("🔨"),
+      new ButtonBuilder()
+        .setCustomId(`tempvc-limit`)
+        .setLabel("Limit")
+        .setStyle(ButtonStyle.Primary)
+        .setEmoji("🔢"),
     ];
 
     newChannel.send({
