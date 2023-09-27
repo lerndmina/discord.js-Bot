@@ -55,8 +55,10 @@ module.exports = async (message, client) => {
   }
 
   // Reboot command
-  if (message.content == `${env.PREFIX}reboot`) {
+  if (message.content.startsWith(`${env.PREFIX}reboot`)) {
     if (!env.OWNER_IDS.includes(message.author.id)) return;
+    if (message.content == `${env.PREFIX}reboot hard`) process.exit(0);
+
     await message.reply({
       embeds: [BasicEmbed(client, "Reboot", "Rebooting...")],
     });
