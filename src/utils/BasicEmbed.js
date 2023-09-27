@@ -1,5 +1,3 @@
-// use the embed builder from discord.js to return an embed
-
 const { Client, EmbedBuilder, Embed } = require("discord.js");
 const { BOT_MESSAGES, BOT_URL } = require("../Bot");
 
@@ -22,7 +20,7 @@ module.exports = (client, title, description, fields, color) => {
     fields = [];
   }
 
-  if (description == "*") description = "‎";
+  if (description == "*") description = "‎"; // invisible character
 
   if (!color.includes("#")) {
     // Uppercase first letter and lowercase the rest to comply with EmbedBuilder
