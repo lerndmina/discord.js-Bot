@@ -1,11 +1,8 @@
-const { ContextMenuCommandBuilder, ApplicationCommandType, EmbedBuilder } = require("discord.js");
+const { ContextMenuCommandBuilder, ApplicationCommandType } = require("discord.js");
 const { Configuration, OpenAIApi } = require("openai");
 const BasicEmbed = require("../../utils/BasicEmbed");
 
 require("dotenv").config();
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const OWNER_ID = process.env.OWNER_ID;
-const PREFIX = process.env.PREFIX;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const configuration = new Configuration({
@@ -24,7 +21,7 @@ module.exports = {
   run: async ({ interaction, client, handler }) => {
     const content = interaction.targetMessage.content;
 
-    // Get the number of tokens in the message
+    // Estimate the number of tokens in the message
     const tokens = content.split(" ").length;
 
     // Check if the message is too long
