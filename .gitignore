@@ -28,4 +28,3 @@ Thumbs.db
 .env
 *.mp3
 *.ogg
-src/events/voiceStateUpdate/joinedAFKChannel.js

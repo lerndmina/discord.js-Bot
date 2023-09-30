@@ -4,13 +4,6 @@ const BasicEmbed = require("../../utils/BasicEmbed");
 var log = require("fancy-log");
 
 require("dotenv").config();
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
-const configuration = new Configuration({
-  apiKey: OPENAI_API_KEY,
-});
-const systemPrompt = require("../../utils/SystemPrompt");
-const ResponsePlugins = require("../../utils/ResponsePlugins");
 
 module.exports = {
   data: new SlashCommandBuilder()
