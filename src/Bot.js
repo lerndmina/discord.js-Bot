@@ -90,5 +90,22 @@ module.exports.BOT_MESSAGES = [
  * @description Home url for lerndmina
  */
 module.exports.BOT_URL = "https://lerndmina.dev";
+var _commandCooldown = new Map();
+
+/**
+ *
+ * @returns {Map}
+ */
+module.exports.getCommandCooldown = function () {
+  return _commandCooldown;
+};
+
+/**
+ *
+ * @param {Map} value
+ */
+module.exports.setCommandCooldown = function (value) {
+  _commandCooldown = value;
+};
 
 this.Start();
