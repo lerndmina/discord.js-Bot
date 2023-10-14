@@ -27,11 +27,12 @@ module.exports = {
         .setRequired(false)
     ),
   options: {
-    devOnly: true,
+    devOnly: false,
     deleted: false,
+    guildOnly: true,
   },
   run: async ({ interaction, client, handler }) => {
-    const content = interaction.options.getString("content").split(";");
+    const content = interaction.options.getString("content").replace(/;+$/, "").split(";");
     const time = interaction.options.getInteger("time");
 
     // check if the content is valid
@@ -46,9 +47,14 @@ module.exports = {
     // get the question
     const question = content[0];
 
-    log("time = " + time);
+    var POLL_TIME;
 
-    const POLL_TIME = time | (1000 * 60); // 1 minute
+    if (time) {
+      POLL_TIME = time * 1000;
+    } else {
+      POLL_TIME = 60000;
+    }
+
     const endTime = Date.now() + POLL_TIME;
     const endTimeSeconds = Math.floor(endTime / 1000);
 
@@ -58,7 +64,8 @@ module.exports = {
       interaction.client,
       question,
       `Poll will end <t:${endTimeSeconds}:R> \n\n` +
-        options.map((option, index) => `${index + 1}. \`${option}\``).join("\n"),
+        options.map((option, index) => `${index + 1}. \`${option}\``).join("\n") +
+        "\n\n **All votes are anonymous**.",
       "#0099ff"
     );
 
@@ -171,7 +178,7 @@ function endVote(voteInteraction, response, options, votes) {
         const voteCount = voteCounts[index] || 0;
         const percentage = Math.floor((voteCount / totalVotes) * 100);
 
-        return `${index + 1}. \`${option}\` - ${percentage}%`;
+        return `${index + 1}. \`${option}\` - ${percentage}% (${voteCount} vote(s))`;
       })
       .join("\n"),
     "#0099ff"
@@ -179,11 +186,19 @@ function endVote(voteInteraction, response, options, votes) {
 
   const editEmbed = BasicEmbed(voteInteraction.client, "Poll Ended", "Results Posted Below");
 
-  response.edit({
-    embeds: [editEmbed],
-    components: [],
-    ephemeral: false,
-  });
+  try {
+    response.edit({
+      embeds: [editEmbed],
+      components: [],
+      ephemeral: false,
+    });
+  } catch (error) {
+    log.error(error);
+    log(
+      "Poll has ended, but could not edit the original message. It has probably been deleted intentionally."
+    );
+    return;
+  }
 
   voteInteraction.channel.send({ embeds: [finalEmbed] });
 }
