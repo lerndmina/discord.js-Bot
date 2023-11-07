@@ -1,7 +1,7 @@
 FROM node:latest
 
-# Install Yarn
-RUN npm install -g yarn
+# # Install Yarn
+# RUN npm install -g yarn
 
 # Install FFmpeg
 RUN apt-get update && \
