@@ -8,19 +8,22 @@ Lastly, the bot integrates with OpenAI's GPT-3 API, which was another exciting a
 
 ## Installation
 Clone the repository:
-```
+```bash
 git clone https://github.com/lerndmina/discord.js-Bot.git
 ```
 
 Install dependencies:
-```
+```bash
 yarn install
 ```
 
 Copy the `.env.example` file to `.env` and fill in the provided variables.
+```bash
+cp .env.example .env
+```
 
 Start the bot
-```
+```bash
 yarn start
 ```
 
