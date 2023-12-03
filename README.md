@@ -17,15 +17,7 @@ Install dependencies:
 yarn install
 ```
 
-Create a `.env` file with the following environment variables:
-```
-BOT_TOKEN=
-CLIENT_ID=
-GUILD_ID=
-OWNER_ID=
-PREFIX=!
-OPENAI_API_KEY=
-```
+Copy the `.env.example` file to `.env` and fill in the provided variables.
 
 Start the bot
 ```
@@ -33,6 +25,6 @@ yarn start
 ```
 
 ## Usage
-To use the bot, invite it to your Discord server and type `!sync` to sync the slash commands to your server.
+This code isn't supposed to be used by anyone else, but if you want to, you can. Just make sure to replace the environment variables with your own. I won't be providing any support for this but if you find any bugs, feel free to open an issue.
 
-You can also mention the bot to get a response from OpenAI's GPT-3 API.
+As some basic documentation, the command handler uses the `commands` folder to find commands. Each command is a separate file, and the file name is the command name. The command handler also uses the `events` folder to find events. Each event is a separate file, and the file name is the event name. This functionality is provided by [Commandkit](https://commandkit.js.org/) so read their documentation for more information.
