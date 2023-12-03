@@ -128,6 +128,10 @@ module.exports = {
 
       if (vote == "end") {
         collector.stop("done");
+        i.editReply({
+          content: "Ending the poll.",
+          ephemeral: true,
+        });
         return;
       }
 
