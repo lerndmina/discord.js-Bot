@@ -1,0 +1,2 @@
+- Make a ticket system using modals and buttons (required for applications)
+- Make a similar modmail system that only requires a dm to the bot -- Done

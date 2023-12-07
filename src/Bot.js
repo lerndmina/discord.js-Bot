@@ -73,6 +73,12 @@ module.exports.BOT_URL = "https://lerndmina.dev";
 var _commandCooldown = new Map();
 
 /**
+ * @type {String}
+ * @description Waiting emoji
+ */
+module.exports.waitingEmoji = "<a:waiting:1182406401641955328>";
+
+/**
  *
  * @returns {Map}
  */

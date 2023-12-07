@@ -4,7 +4,6 @@ const onMention = require("../../utils/onMention");
 const syncCommands = require("../../utils/unregister-commands");
 const TranscribeMessage = require("../../utils/TranscribeMessage");
 const BasicEmbed = require("../../utils/BasicEmbed");
-const { convertCompilerOptionsFromJson } = require("typescript");
 
 const env = require("../../utils/FetchEnvs")();
 
@@ -57,10 +56,15 @@ module.exports = async (message, client) => {
   // Reboot command
   if (message.content.startsWith(`${env.PREFIX}reboot`)) {
     if (!env.OWNER_IDS.includes(message.author.id)) return;
-    if (message.content == `${env.PREFIX}reboot hard`) process.exit(0);
+    if (message.content == `${env.PREFIX}reboot hard`) {
+      await message.reply({
+        content: "https://media1.tenor.com/m/8knHdqV3MTkAAAAC/king-of-the-hill-hank.gif",
+      });
+      process.exit(0);
+    }
 
     await message.reply({
-      embeds: [BasicEmbed(client, "Reboot", "Rebooting...")],
+      content: "https://tenor.com/view/bye-bourne-gif-22698046",
     });
     log("Rebooting...");
 
@@ -75,22 +79,23 @@ module.exports = async (message, client) => {
     const { Start } = require("../../Bot");
 
     await Start();
-  }
-
-  if (message.type == MessageType.Reply) {
-    const channel = message.channel;
-    const repliedMessage = await channel.messages.fetch(message.reference.messageId);
-    if (repliedMessage.author.id != client.user.id) return;
-
-    if (repliedMessage.interaction != null) return;
-
-    onMention(client, message, env.OPENAI_API_KEY);
     return true;
   }
-  if (message.content.includes(client.user.id)) {
-    onMention(client, message, env.OPENAI_API_KEY);
-    return true;
-  }
+
+  // if (message.type == MessageType.Reply) {
+  //   const channel = message.channel;
+  //   const repliedMessage = await channel.messages.fetch(message.reference.messageId);
+  //   if (repliedMessage.author.id != client.user.id) return;
+
+  //   if (repliedMessage.interaction != null) return;
+
+  //   onMention(client, message, env.OPENAI_API_KEY);
+  //   return true;
+  // }
+  // if (message.content.includes(client.user.id)) {
+  //   onMention(client, message, env.OPENAI_API_KEY);
+  //   return true;
+  // }
 
   if (message.flags == MessageFlags.IsVoiceMessage && message.attachments.size == 1) {
     if (message.reactions.cache.size > 0) return;

@@ -24,8 +24,8 @@ const ms = require("ms");
 
 module.exports = async (oldState, newState, client) => {
   if (newState.channelId == null) return;
-  joinedChannelId = newState.channelId;
-  guildId = newState.guild.id;
+  const joinedChannelId = newState.channelId;
+  const guildId = newState.guild.id;
 
   const vcList = await GuildNewVC.findOne({ guildID: guildId });
 
