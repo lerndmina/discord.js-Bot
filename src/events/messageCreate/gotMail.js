@@ -26,12 +26,26 @@ module.exports = async (message, client) => {
   if (message.author.bot) return;
   const user = message.author;
 
-  if (message.guildId) {
-    if (message.channel instanceof ThreadChannel) {
-      await handleReply(message, client, user);
+  try {
+    if (message.guildId) {
+      if (message.channel instanceof ThreadChannel) {
+        await handleReply(message, client, user);
+      }
+    } else {
+      await handleDM(message, client, user);
     }
-  } else {
-    await handleDM(message, client, user);
+  } catch (error) {
+    message.reply({
+      embeds: [
+        BasicEmbed(
+          client,
+          "Modmail",
+          "An unhandled error occured while trying to process your message. Please contact the bot developer. I've logged the error for them.",
+          "Red"
+        ),
+      ],
+    });
+    log.error(error);
   }
 };
 
@@ -67,7 +81,8 @@ async function newModmail(customIds, message, user, client) {
   ];
 
   const reply = await message.reply({
-    content: "Would you like to open a modmail thread?",
+    content: "",
+    embeds: [BasicEmbed(client, "Modmail", "Would you like to create a modmail thread?", "Random")],
     components: ButtonWrapper(buttons),
   });
 
@@ -81,7 +96,7 @@ async function newModmail(customIds, message, user, client) {
    * @param {ButtonInteraction} i
    */
   collector.on("collect", async (i) => {
-    const orignalMsg = await i.update({ content: waitingEmoji, components: [] });
+    const orignalMsg = await i.update({ content: waitingEmoji, components: [], embeds: [] });
 
     if (i.customId === customIds[1]) {
       // Cancel button
@@ -91,7 +106,13 @@ async function newModmail(customIds, message, user, client) {
 
     // Create button
     // TODO: Look up which servers the user and bot are in that both have modmail enabled
-    const sharedGuilds = client.guilds.cache.filter((guild) => guild.members.cache.has(user.id));
+    const sharedGuilds = [];
+    for (const [, guild] of client.guilds.cache) {
+      await guild.members
+        .fetch(i.user)
+        .then(() => sharedGuilds.push(guild))
+        .catch((error) => console.log(error));
+    }
     const stringSelectMenuID = `guildList-${i.id}`;
     var guildList = new StringSelectMenuBuilder()
       .setCustomId(stringSelectMenuID)
@@ -99,8 +120,7 @@ async function newModmail(customIds, message, user, client) {
       .setMinValues(1)
       .setMaxValues(1);
     var addedSomething = false;
-
-    for (var [_, guild] of sharedGuilds) {
+    for (var guild of sharedGuilds) {
       const config = await ModmailConfig.findOne({ guildId: guild.id });
       if (config) {
         addedSomething = true;
@@ -117,13 +137,27 @@ async function newModmail(customIds, message, user, client) {
 
     if (!addedSomething) {
       await orignalMsg.edit({
-        content: "No servers you are in have modmail enabled.",
+        content: "",
         components: [],
+        embeds: [
+          BasicEmbed(
+            client,
+            "Modmail",
+            "There are no servers that have modmail enabled that you and I are both in.",
+            "Random"
+          ),
+        ],
       });
       return;
     }
     const row = new ActionRowBuilder().addComponents(guildList);
-    await orignalMsg.edit({ content: "Please select a server to mail to", components: [row] });
+    await orignalMsg.edit({
+      embeds: [
+        BasicEmbed(client, "Modmail", "Select a server to open a modmail thread in.", "Random"),
+      ],
+      content: "",
+      components: [row],
+    });
 
     await serverSelectedOpenModmailThread(orignalMsg, stringSelectMenuID, message);
     return;
@@ -148,7 +182,7 @@ async function newModmail(customIds, message, user, client) {
       const guildId = value.guild;
       const channelId = value.channel;
       const staffRoleId = value.staffRoleId;
-      await reply.edit({ content: waitingEmoji, components: [] });
+      await reply.edit({ content: waitingEmoji, components: [], embeds: [] });
 
       const guild = client.guilds.cache.get(guildId);
       const member = guild.members.cache.get(i.user.id);
@@ -176,7 +210,17 @@ async function newModmail(customIds, message, user, client) {
         reason: "Modmail Webhook, required to show the user properly.",
       });
 
-      thread.send(`Hey! \`<@&${staffRoleId}>\`, ${memberName} has opened a modmail thread!`);
+      thread.send({
+        content: `<@&${staffRoleId}>`,
+        embeds: [
+          BasicEmbed(
+            client,
+            "Modmail",
+            "`Hey! ${memberName} has opened a modmail thread!`",
+            "Random"
+          ),
+        ],
+      });
 
       await Modmail.findOneAndUpdate(
         { userId: i.user.id },
@@ -193,7 +237,18 @@ async function newModmail(customIds, message, user, client) {
         }
       );
 
-      reply.edit({ content: `Modmail is open, staff will reply below.` });
+      reply.edit({
+        content: ``,
+        embeds: [
+          BasicEmbed(
+            client,
+            "Modmail",
+            `Successfully created modmail thread in ${guild.name}!\nStaff will reply below. You can send messages here to reply to staff.`,
+            "Random"
+          ),
+        ],
+        components: [],
+      });
     });
   }
 }
@@ -209,7 +264,9 @@ async function sendMessage(mail, message, client) {
     const thread = guild.channels.cache.get(mail.forumThreadId);
     const webhook = await client.fetchWebhook(mail.webhookId, mail.webhookToken);
     if (!(await postWebhookToThread(webhook.url, thread.id, message.content))) {
-      thread.send(`${message.author.username} says: ${message.content}`);
+      thread.send(
+        `${message.author.username} says: ${message.content}\n\n\`\`\`This message failed to send as a webhook, please contact the bot developer.\`\`\``
+      );
       log.error("Failed to send message to thread, sending normally.");
     }
   } catch (error) {

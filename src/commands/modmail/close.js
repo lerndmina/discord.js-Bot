@@ -37,20 +37,23 @@ module.exports = {
     const forumThread = await client.channels.fetch(mail.forumThreadId);
     const webhook = await client.fetchWebhook(mail.webhookId, mail.webhookToken);
     webhook.delete();
+    const embed = BasicEmbed(
+      client,
+      "Modmail Closed",
+      `This modmail thread has been closed.\n\nReason: ${reason}\n\nYou can open a modmail by sending another message to the bot.`,
+      "Red"
+    );
+
     await forumThread.send({
-      embeds: [
-        BasicEmbed(
-          client,
-          "Modmail Closed",
-          `This modmail thread has been closed.\n\nReason: ${reason}`,
-          "Red"
-        ),
-      ],
+      embeds: [embed],
+    });
+    await client.users.cache.get(mail.userId).send({
+      embeds: [embed],
     });
     forumThread.setArchived(true, reason);
 
     await Modmail.deleteOne({ forumThreadId: forumThread.id });
 
-    interaction.editReply("🎉 Successfully closed modmail thread!");
+    await interaction.editReply("🎉 Successfully closed modmail thread!");
   },
 };
