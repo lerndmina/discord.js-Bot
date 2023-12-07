@@ -12,7 +12,7 @@ module.exports = {
     .setName("shared")
     .setDescription("List the guilds you share with the bot."),
   options: {
-    devOnly: true,
+    devOnly: false,
     deleted: false,
   },
   run: async ({ interaction, client, handler }) => {
