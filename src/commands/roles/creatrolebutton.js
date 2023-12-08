@@ -16,6 +16,7 @@ const { debuglog } = require("util");
 const ButtonWrapper = require("../../utils/ButtonWrapper");
 const { randomUUID } = require("crypto");
 const RoleButtons = require("../../models/RoleButtons");
+const { ROLE_BUTTON_PREFIX } = require("../../Bot");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -114,7 +115,7 @@ module.exports = {
 
       const buttons = [
         new ButtonBuilder()
-          .setCustomId(`roleGive-${uuid}`)
+          .setCustomId(`${ROLE_BUTTON_PREFIX}${uuid}`)
           .setLabel(content)
           .setStyle(ButtonStyle.Primary)
           .setEmoji(emoji || "✔️"),

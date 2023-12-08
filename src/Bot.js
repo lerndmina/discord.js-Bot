@@ -78,7 +78,7 @@ module.exports.ROLE_BUTTON_PREFIX = "roleGive-";
  * @type {String}
  * @description Waiting emoji
  */
-module.exports.waitingEmoji = "<a:waiting:1182406401641955328>";
+module.exports.waitingEmoji = "<a:waiting:1182794459272974416>";
 
 /**
  *

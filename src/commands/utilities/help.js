@@ -25,6 +25,7 @@ module.exports = {
 
     // Get all commands into a format [categoryName, {commandName: string}]
     for (const command of localCommands) {
+      log(command);
       var commandCategory = command.category;
       const commandName = command.name;
 

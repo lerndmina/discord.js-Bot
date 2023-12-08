@@ -7,6 +7,7 @@ const {
 } = require("discord.js");
 const RoleButtons = require("../../models/RoleButtons");
 const { log } = require("console");
+const { ROLE_BUTTON_PREFIX } = require("../../Bot");
 
 /**
  *
@@ -16,7 +17,7 @@ const { log } = require("console");
 module.exports = async (interaction, client) => {
   if (interaction.type !== InteractionType.MessageComponent) return;
   if (!interaction.guild) return;
-  if (!interaction.customId.startsWith("roleGive-")) return;
+  if (!interaction.customId.startsWith(ROLE_BUTTON_PREFIX)) return;
 
   const parts = interaction.customId.split("-");
   const uuid = parts.slice(1).join("-");

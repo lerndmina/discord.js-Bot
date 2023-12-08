@@ -10,7 +10,6 @@ const { BOT_MESSAGES, BOT_URL } = require("../Bot");
  * @param {string} color
  * @returns
  */
-
 module.exports = (client, title, description, fields, color) => {
   if (color == undefined) color = "#de3b79";
   // if fields is a string,
