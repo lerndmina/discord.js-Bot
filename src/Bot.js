@@ -72,6 +72,8 @@ module.exports.BOT_MESSAGES = [
 module.exports.BOT_URL = "https://lerndmina.dev";
 var _commandCooldown = new Map();
 
+module.exports.ROLE_BUTTON_PREFIX = "roleGive-";
+
 /**
  * @type {String}
  * @description Waiting emoji
