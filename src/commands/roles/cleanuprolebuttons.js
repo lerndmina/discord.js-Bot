@@ -28,7 +28,7 @@ module.exports = {
     var channel = interaction.options.getChannel("channel");
     if (!channel) channel = interaction.channel;
 
-    // Loop through all messages in the channel
+    // Loop through all messages in the channel.
     var messages = await channel.messages.fetch();
     messages.forEach(async (message) => {
       if (!(message.components.length > 0)) return;
