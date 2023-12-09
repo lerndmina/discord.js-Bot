@@ -279,10 +279,15 @@ async function sendMessage(mail, message, client) {
 async function handleReply(message, client, staffUser) {
   const thread = message.channel;
   const mail = await Modmail.findOne({ forumThreadId: thread.id });
+  const threadMembers = thread.members;
+  const botId = threadMembers.find((m) => m.id === client.user.id);
   if (!mail) {
     return;
   }
 
   const user = client.users.cache.get(mail.userId);
   await user.send({ content: message.content });
+  const getter = new ThingGetter(client);
+  if (botId === client.user.id)
+    (await getter.getUser(mail.userId)).send({ content: message.content });
 }
