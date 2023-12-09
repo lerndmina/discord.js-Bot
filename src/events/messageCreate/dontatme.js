@@ -1,4 +1,4 @@
-const { Message, Client } = require("discord.js");
+const { Message, Client, ChannelType } = require("discord.js");
 var log = require("fancy-log");
 const { Database } = require("../../utils/cache/database");
 const { ThingGetter } = require("../../utils/TinyUtils");
@@ -17,7 +17,7 @@ const env = require("../../utils/FetchEnvs")();
 module.exports = async (message, client) => {
   if (message.author.bot) return;
   if (!message.mentions.users) return;
-  if (message.channel.type === "DM") return;
+  if (message.channel.type === ChannelType.DM) return;
 
   const db = new Database();
   const guildId = message.guild.id;
