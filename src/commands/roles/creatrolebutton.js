@@ -72,7 +72,7 @@ module.exports = {
       option.setName("emoji4").setDescription("The emoji to use for the button").setRequired(false)
     ),
   options: {
-    devOnly: true,
+    devOnly: false,
     deleted: false,
     guildOnly: true,
     userPermissions: ["Administrator"],
