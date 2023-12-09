@@ -202,8 +202,8 @@ module.exports = {
         const components = ButtonWrapper(buttons);
 
         await i.channel.send({
-          content: json.content || json.messages[0].data.content || "",
-          embeds: json.embeds || json.messages[0].data.embeds,
+          content: json.messages ? json.messages[0].data.content : json.content || "",
+          embeds: json.messages ? json.messages[0].data.embeds : json.embeds,
           components: components,
         });
 

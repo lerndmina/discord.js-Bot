@@ -35,6 +35,7 @@ module.exports = async (message, client) => {
   }
   var hasRole = false;
   message.mentions.users.forEach((user) => {
+    if (user == message.author) return;
     const member = guild.members.cache.get(user.id);
     if (!member) return;
     if (member.roles.cache.has(roleId)) {
