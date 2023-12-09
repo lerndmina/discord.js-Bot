@@ -19,10 +19,12 @@ const Modmail = require("../../models/Modmail");
 const ModmailConfig = require("../../models/ModmailConfig");
 const ButtonWrapper = require("../../utils/ButtonWrapper");
 const { waitingEmoji } = require("../../Bot");
-const postWebhookToThread = require("../../utils/TinyUtils");
+const { postWebhookToThread, ThingGetter } = require("../../utils/TinyUtils");
+const { Database } = require("../../utils/cache/database");
 const MAX_TITLE_LENGTH = 50;
 
 module.exports = async (message, client) => {
+  const db = new Database();
   if (message.author.bot) return;
   const user = message.author;
 
@@ -55,8 +57,10 @@ module.exports = async (message, client) => {
  * @param {User} user
  */
 async function handleDM(message, client, user) {
+  const db = new Database();
   const requestId = message.id;
-  const mail = await Modmail.findOne({ userId: user.id });
+  // const mail = await Modmail.findOne({ userId: user.id });
+  const mail = await db.findOne(Modmail, { userId: user.id });
   const customIds = [`create-${requestId}`, `cancel-${requestId}`];
   if (!mail) {
     await newModmail(customIds, message, user, client);
@@ -107,7 +111,8 @@ async function newModmail(customIds, message, user, client) {
     // Create button
     // TODO: Look up which servers the user and bot are in that both have modmail enabled
     const sharedGuilds = [];
-    for (const [, guild] of client.guilds.cache) {
+    const cachedGuilds = client.guilds.cache;
+    for (const [, guild] of cachedGuilds) {
       await guild.members
         .fetch(i.user)
         .then(() => sharedGuilds.push(guild))
@@ -121,7 +126,8 @@ async function newModmail(customIds, message, user, client) {
       .setMaxValues(1);
     var addedSomething = false;
     for (var guild of sharedGuilds) {
-      const config = await ModmailConfig.findOne({ guildId: guild.id });
+      const db = new Database();
+      const config = await db.findOne(ModmailConfig, { guildId: guild.id });
       if (config) {
         addedSomething = true;
         guildList.addOptions({
@@ -259,9 +265,10 @@ async function newModmail(customIds, message, user, client) {
  * @param {Client} client
  */
 async function sendMessage(mail, message, client) {
+  const getter = new ThingGetter(client);
   try {
-    const guild = client.guilds.cache.get(mail.guildId);
-    const thread = guild.channels.cache.get(mail.forumThreadId);
+    const guild = await getter.getGuild(mail.guildId);
+    const thread = await getter.getChannel(mail.forumThreadId);
     const webhook = await client.fetchWebhook(mail.webhookId, mail.webhookToken);
     if (!(await postWebhookToThread(webhook.url, thread.id, message.content))) {
       thread.send(
@@ -277,17 +284,16 @@ async function sendMessage(mail, message, client) {
 }
 
 async function handleReply(message, client, staffUser) {
+  const db = new Database();
   const thread = message.channel;
-  const mail = await Modmail.findOne({ forumThreadId: thread.id });
-  const threadMembers = thread.members;
-  const botId = threadMembers.find((m) => m.id === client.user.id);
+  const messages = await thread.messages.fetch();
+  const lastMessage = messages.last();
+
+  const mail = await db.findOne(Modmail, { forumThreadId: thread.id });
   if (!mail) {
     return;
   }
-
-  const user = client.users.cache.get(mail.userId);
-  await user.send({ content: message.content });
   const getter = new ThingGetter(client);
-  if (botId === client.user.id)
+  if (lastMessage.author.id === client.user.id)
     (await getter.getUser(mail.userId)).send({ content: message.content });
 }

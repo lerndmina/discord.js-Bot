@@ -4,6 +4,7 @@ const path = require("path");
 const log = require("fancy-log");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const { createClient } = require("redis");
 
 const env = require("./utils/FetchEnvs")();
 
@@ -33,16 +34,14 @@ module.exports.Start = async () => {
     devUserIds: env.OWNER_IDS,
   });
 
-  log.info(
-    `Logging in to Discord with ${commandKit.commands.length} commands and ${
-      Object.keys(env).length
-    } enviroment variables.`
-  );
+  log.info(`Logging in to Discord with ${Object.keys(env).length} enviroment variables.`);
 
   await mongoose.connect(env.MONGODB_URI).then(() => {
     log.info("Connected to MongoDB");
     client.login(env.BOT_TOKEN);
   });
+
+  await module.exports.redisClient.connect();
 };
 
 /**
@@ -69,8 +68,7 @@ module.exports.BOT_MESSAGES = [
  * @type {string[]}
  * @description Home url for lerndmina
  */
-module.exports.BOT_URL = "https://lerndmina.dev";
-var _commandCooldown = new Map();
+module.exports.BOT_URL = env.BOT_URL;
 
 module.exports.ROLE_BUTTON_PREFIX = "roleGive-";
 
@@ -78,22 +76,53 @@ module.exports.ROLE_BUTTON_PREFIX = "roleGive-";
  * @type {String}
  * @description Waiting emoji
  */
-module.exports.waitingEmoji = "<a:waiting:1182794459272974416>";
+module.exports.waitingEmoji = env.WAITING_EMOJI;
+
+var _commandCooldown = new Map();
 
 /**
- *
- * @returns {Map}
+ * @param {string} commandName
+ * @param {import("discord.js").Interaction} interaction
+ * @returns {string}
  */
-module.exports.getCommandCooldown = function () {
+module.exports.getKeyString = function (commandName, interaction) {
+  return `${commandName}-${interaction.user.id}`;
+};
+/**
+ * @returns {Map<string, number>}
+ */
+module.exports.getCommandCooldownMap = function () {
   return _commandCooldown;
 };
 
 /**
- *
- * @param {Map} value
+ * @param {string} key
+ * @returns {number | undefined}
  */
-module.exports.setCommandCooldown = function (value) {
-  _commandCooldown = value;
+module.exports.getCommandCooldown = function (key) {
+  return _commandCooldown.get(key);
 };
+
+/**
+ * @param {string} key
+ * @param {number} value
+ */
+module.exports.setCommandCooldown = function (key, value) {
+  _commandCooldown.set(key, value);
+};
+
+/**
+ * @param {string} key
+ * @returns {boolean}
+ */
+module.exports.deleteCommandCooldownKey = function (key) {
+  return _commandCooldown.delete(key);
+};
+
+module.exports.redisClient = createClient({
+  url: env.REDIS_URL,
+})
+  .on("error", (err) => log.error("Redis Client Error", err))
+  .on("ready", () => log.info("Redis Client Ready"));
 
 this.Start();

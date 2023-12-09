@@ -75,11 +75,18 @@ module.exports = async (message, client) => {
     // Cleanly log out of Discord
     client.destroy();
 
+    // Log out of MongoDB
+    const mongoose = require("mongoose");
+    await mongoose.disconnect();
+
+    // Log out of Redis
+    const { redisClient } = require("../../Bot");
+    await redisClient.disconnect();
+
     // Log back in
     const { Start } = require("../../Bot");
 
     await Start();
-    return true;
   }
 
   // if (message.type == MessageType.Reply) {

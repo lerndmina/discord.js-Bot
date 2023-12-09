@@ -4,6 +4,7 @@ var log = require("fancy-log");
 const { Channel } = require("diagnostics_channel");
 
 const GuildNewVC = require("../../models/GuildNewVC");
+const { ThingGetter } = require("../../utils/TinyUtils");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -40,6 +41,7 @@ module.exports = {
   },
 
   run: async ({ interaction, client, handler }) => {
+    getter = new ThingGetter(client);
     const subcommand = interaction.options.getSubcommand();
 
     const query = {
@@ -52,7 +54,7 @@ module.exports = {
       const category = interaction.options.getString("category");
 
       // Check if the category exists
-      const categoryChannel = interaction.guild.channels.cache.get(category);
+      const categoryChannel = await getter.getChannel(category);
       if (!categoryChannel) {
         await interaction.reply({
           content: `The category ${category} does not exist.`,

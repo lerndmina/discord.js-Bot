@@ -1,7 +1,16 @@
-const { SlashCommandBuilder, EmbedBuilder, userMention, ChannelType } = require("discord.js");
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  userMention,
+  ChannelType,
+  ClientUser,
+} = require("discord.js");
 const BasicEmbed = require("../../utils/BasicEmbed");
 const Modmail = require("../../models/Modmail");
 const { waitingEmoji } = require("../../Bot");
+const { ThingGetter } = require("../../utils/TinyUtils");
+const { Database } = require("../../utils/cache/database");
+const log = require("fancy-log");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -20,6 +29,7 @@ module.exports = {
     botPermissions: ["Administrator"],
   },
   run: async ({ interaction, client, handler }) => {
+    const getter = new ThingGetter(client);
     const reason = interaction.options.getString("reason") || "No reason provided";
 
     var mail = await Modmail.findOne({ forumThreadId: interaction.channel.id });
@@ -34,9 +44,13 @@ module.exports = {
 
     await interaction.reply(waitingEmoji);
 
-    const forumThread = await client.channels.fetch(mail.forumThreadId);
-    const webhook = await client.fetchWebhook(mail.webhookId, mail.webhookToken);
-    webhook.delete();
+    const forumThread = await getter.getChannel(mail.forumThreadId);
+    try {
+      const webhook = await client.fetchWebhook(mail.webhookId, mail.webhookToken);
+      webhook.delete();
+    } catch (error) {
+      log.error("Webhook missing, probably already deleted.");
+    }
     const embed = BasicEmbed(
       client,
       "Modmail Closed",
@@ -47,12 +61,14 @@ module.exports = {
     await forumThread.send({
       embeds: [embed],
     });
-    await client.users.cache.get(mail.userId).send({
+
+    (await getter.getUser(mail.userId)).send({
       embeds: [embed],
     });
     forumThread.setArchived(true, reason);
 
-    await Modmail.deleteOne({ forumThreadId: forumThread.id });
+    const db = new Database();
+    await db.deleteOne(Modmail, { forumThreadId: forumThread.id });
 
     await interaction.editReply("🎉 Successfully closed modmail thread!");
   },

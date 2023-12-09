@@ -6,6 +6,7 @@ const {
 } = require("discord.js");
 const log = require("fancy-log");
 const BasicEmbed = require("../../utils/BasicEmbed");
+const { ThingGetter } = require("../../utils/TinyUtils");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,6 +17,7 @@ module.exports = {
     deleted: false,
   },
   run: async ({ interaction, client, handler }) => {
+    getter = new ThingGetter(client);
     //code to fetch mutual servers
     const guilds = [];
     for (const [, guild] of client.guilds.cache) {
@@ -67,7 +69,7 @@ module.exports = {
       /**
        * @type {import("discord.js").Guild}
        */
-      const guild = client.guilds.cache.get(interactionResponse.values[0]);
+      const guild = await getter.getGuild(interactionResponse.values[0]);
 
       log(guild.name);
 

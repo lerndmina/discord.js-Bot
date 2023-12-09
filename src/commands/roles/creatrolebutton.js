@@ -63,83 +63,93 @@ module.exports = {
     await interaction.showModal(modal);
     const filter = (interaction) => interaction.customId === modalId;
 
-    interaction.awaitModalSubmit({ filter, time: 120000 }).then(async (modalInteraction) => {
-      /**
-       * @type {ModalSubmitInteraction}
-       */
-      const i = modalInteraction;
+    interaction
+      .awaitModalSubmit({ filter, time: 120_000 })
+      .then(async (modalInteraction) => {
+        /**
+         * @type {ModalSubmitInteraction}
+         */
+        const i = modalInteraction;
 
-      var raw = i.fields.getTextInputValue(inputId);
-      var json = null;
-      log(`Url: ${raw}`);
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      if (urlRegex.test(raw)) {
-        log(`Looks like a url to me.`);
-        // Go to the URL and get the raw text
-        var url = raw.match(urlRegex)[0].replace("/u/", "/r/");
-        url = url.replace("/code/", "/r/");
-        const res = await fetch(url);
-        var raw = (await res.text()).trim();
-        log(`Fetched`);
-        // We have the json
-        try {
-          json = JSON.parse(raw);
-          log(`Parsed`);
-        } catch (error) {
-          log.error(error);
+        var raw = i.fields.getTextInputValue(inputId);
+        var json = null;
+        log(`Url: ${raw}`);
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        if (urlRegex.test(raw)) {
+          log(`Looks like a url to me.`);
+          // Go to the URL and get the raw text
+          var url = raw.match(urlRegex)[0].replace("/u/", "/r/");
+          url = url.replace("/code/", "/r/");
+          const res = await fetch(url);
+          var raw = (await res.text()).trim();
+          log(`Fetched`);
+          // We have the json
+          try {
+            json = JSON.parse(raw);
+            log(`Parsed`);
+          } catch (error) {
+            log.error(error);
+            return i.reply({
+              embeds: [
+                BasicEmbed(client, "‼️ Error", `There was an error parsing the JSON.`, "Red"),
+              ],
+              ephemeral: true,
+            });
+          }
+        } else {
           return i.reply({
-            embeds: [BasicEmbed(client, "‼️ Error", `There was an error parsing the JSON.`, "Red")],
+            embeds: [BasicEmbed(client, "‼️ Error", `You didn't give me a url`, "Red")],
             ephemeral: true,
           });
         }
-      } else {
-        return i.reply({
-          embeds: [BasicEmbed(client, "‼️ Error", `You didn't give me a url`, "Red")],
+        i.reply({
+          embeds: [
+            BasicEmbed(
+              client,
+              "✅ Success",
+              `JSON Accepted. Parsing and creating the message here.`,
+              "Green"
+            ),
+          ],
           ephemeral: true,
         });
-      }
-      i.reply({
-        embeds: [
-          BasicEmbed(
-            client,
-            "✅ Success",
-            `JSON Accepted. Parsing and creating the message here.`,
-            "Green"
-          ),
-        ],
-        ephemeral: true,
+
+        var uuid = randomUUID();
+        log(`UUID: ${uuid} Assigned to give role ${role.name} when clicked.`);
+
+        const buttons = [
+          new ButtonBuilder()
+            .setCustomId(`${ROLE_BUTTON_PREFIX}${uuid}`)
+            .setLabel(content)
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji(emoji || "✔️"),
+        ];
+        const components = ButtonWrapper(buttons);
+
+        await RoleButtons.findOneAndUpdate(
+          { buttonId: uuid },
+          {
+            buttonId: uuid,
+            guildId: interaction.guild.id,
+            roleId: role.id,
+          },
+          {
+            upsert: true,
+            new: true,
+          }
+        );
+
+        await i.channel.send({
+          content: json.content,
+          embeds: json.embeds,
+          components: components,
+        });
+      })
+      .catch((error) => {
+        return interaction.followUp({
+          embeds: [BasicEmbed(client, "Error", `The interaction timed out.`, "Red")],
+          ephemeral: true,
+        });
       });
-
-      var uuid = randomUUID();
-      log(`UUID: ${uuid} Assigned to give role ${role.name} when clicked.`);
-
-      const buttons = [
-        new ButtonBuilder()
-          .setCustomId(`${ROLE_BUTTON_PREFIX}${uuid}`)
-          .setLabel(content)
-          .setStyle(ButtonStyle.Primary)
-          .setEmoji(emoji || "✔️"),
-      ];
-      const components = ButtonWrapper(buttons);
-
-      await RoleButtons.findOneAndUpdate(
-        { buttonId: uuid },
-        {
-          buttonId: uuid,
-          guildId: interaction.guild.id,
-          roleId: role.id,
-        },
-        {
-          upsert: true,
-          new: true,
-        }
-      );
-
-      await i.channel.send({
-        content: json.content,
-        embeds: json.embeds,
-        components: components,
-      });
-    });
   },
 };

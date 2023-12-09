@@ -12,11 +12,15 @@ module.exports = () => {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     MONGODB_URI: process.env.MONGODB_URI,
     TENOR_API_KEY: process.env.TENOR_API_KEY,
+    WAITING_EMOJI: process.env.WAITING_EMOJI,
+    BOT_URL: process.env.BOT_URL,
+    REDIS_URL: process.env.REDIS_URL,
+    DEBUG_LOG: process.env.DEBUG_LOG,
   };
 
   for (const key in env) {
-    if (env[key] === undefined) {
-      log.error(`Env ${key} is not defined.`);
+    if (env[key] === undefined || env[key] === null || env[key] === "") {
+      log.error(`Env ${key} does not exist or is empty.`);
       process.exit(1);
     }
   }

@@ -32,27 +32,27 @@ module.exports = {
     var messages = await channel.messages.fetch();
     messages.forEach(async (message) => {
       if (!(message.components.length > 0)) return;
+
       message.components.forEach(async (component) => {
-        if (!(component.components.length > 0)) return;
-        component.components.forEach(async (subcomponent) => {
-          if (!subcomponent.data.custom_id.startsWith(ROLE_BUTTON_PREFIX)) return;
-          const uuid = subcomponent.data.custom_id.split("-").slice(1).join("-");
-          log("Deleting button: " + uuid);
-          cleaned++;
-          const errors = await deleteMessageRemoveFromDB(message, uuid);
-          interaction.editReply({
-            content: "Done!",
-            embeds: [
-              BasicEmbed(
-                client,
-                "Role Button Cleanup",
-                `Deleted button: ${uuid}${errors ? `\n\nErrors:\n${errors}` : ""}`
-              ),
-            ],
-          });
+        if (!component.components[0].data.custom_id.startsWith(ROLE_BUTTON_PREFIX)) return;
+
+        const uuid = component.components[0].data.custom_id.split("-").slice(1).join("-");
+        log("Deleting button: " + uuid);
+        cleaned++;
+        const errors = await deleteMessageRemoveFromDB(message, uuid);
+        interaction.editReply({
+          content: "Done!",
+          embeds: [
+            BasicEmbed(
+              client,
+              "Role Button Cleanup",
+              `Deleted button: ${uuid}${errors ? `\n\nErrors:\n${errors}` : ""}`
+            ),
+          ],
         });
       });
     });
+
     if (cleaned == 0) {
       await interaction.editReply({
         content: "",

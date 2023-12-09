@@ -1,35 +1,33 @@
 const log = require("fancy-log");
-const { getCommandCooldown } = require("../Bot");
+const { getCommandCooldown, deleteCommandCooldownKey, getKeyString } = require("../Bot");
 const BasicEmbed = require("../utils/BasicEmbed");
+const { get } = require("http");
 
 module.exports = ({ interaction, commandObj, handler }) => {
   const name = commandObj.data.name;
 
-  cooldown = getCommandCooldown();
-
   const now = Date.now();
+  const globalCooldown = getCommandCooldown(name);
+  const userKey = getKeyString(name, interaction);
+  const userCooldown = getCommandCooldown(userKey);
 
-  if (cooldown.has(name)) {
-    const time = cooldown.get(name);
-
-    if (now < time) {
-      const timeLeft = Math.floor(time / 1000);
-      return hasCooldownMessage(interaction, timeLeft);
+  if (globalCooldown) {
+    if (now < globalCooldown) {
+      return hasCooldownMessage(interaction, globalCooldown);
     } else {
-      cooldown.delete(name);
+      deleteCommandCooldownKey(name);
     }
-  } else if (cooldown.has(`${name}-${interaction.user.id}`)) {
-    const time = cooldown.get(`${name}-${interaction.user.id}`);
-    if (now < time) {
-      const timeLeft = Math.floor(time / 1000);
-      return hasCooldownMessage(interaction, timeLeft);
+  } else if (userCooldown) {
+    if (now < userCooldown) {
+      return hasCooldownMessage(interaction, userCooldown);
     } else {
-      cooldown.delete(`${name}-${interaction.user.id}`);
+      deleteCommandCooldownKey(userKey);
     }
   }
 };
 
-function hasCooldownMessage(interaction, timeLeft) {
+function hasCooldownMessage(interaction, time) {
+  const timeLeft = Math.floor(time / 1000);
   return interaction.reply({
     embeds: [
       BasicEmbed(
