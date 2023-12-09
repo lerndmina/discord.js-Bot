@@ -8,6 +8,7 @@ const {
 const RoleButtons = require("../../models/RoleButtons");
 const { log } = require("console");
 const { ROLE_BUTTON_PREFIX } = require("../../Bot");
+const { Database } = require("../../utils/cache/database");
 
 /**
  *
@@ -21,7 +22,8 @@ module.exports = async (interaction, client) => {
 
   const parts = interaction.customId.split("-");
   const uuid = parts.slice(1).join("-");
-  const roleObj = await RoleButtons.findOne({ buttonId: uuid });
+  const db = new Database();
+  const roleObj = await db.findOne(RoleButtons, { buttonId: uuid });
   if (!roleObj)
     return interaction.reply({
       content: `This button is broken. Please contact the bot developer.\nPlease provide a screenshot of this message\n\`No Role Object Found For ${uuid}\``,

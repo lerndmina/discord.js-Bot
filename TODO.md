@@ -1,2 +1,5 @@
 - Make a ticket system using modals and buttons (required for applications)
+  - Command that can define questions
+  - A button for the user to click to popup those questions in a modal
+  - Create a new channel for the ticket with the user's answers
 - Make a similar modmail system that only requires a dm to the bot -- Done

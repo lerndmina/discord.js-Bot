@@ -18,7 +18,7 @@ module.exports = () => {
     DEBUG_LOG: process.env.DEBUG_LOG,
   };
 
-  if (env.DEBUG_LOG !== "true" || env.DEBUG_LOG !== "1") {
+  if (env.DEBUG_LOG !== "true" && env.DEBUG_LOG !== "1") {
     env.DEBUG_LOG = false;
   }
 
