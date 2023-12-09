@@ -228,7 +228,9 @@ async function newModmail(customIds, message, user, client) {
         ],
       });
 
-      await Modmail.findOneAndUpdate(
+      const db = new Database();
+      await db.findOneAndUpdate(
+        Modmail,
         { userId: i.user.id },
         {
           guildId: guildId,

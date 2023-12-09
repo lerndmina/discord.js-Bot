@@ -44,6 +44,32 @@ class Database {
    *
    * @param {Schema} schema
    * @param {Map} model
+   * @param {Map} object
+   * @param {QueryOptions} [options={ upsert: true, new: true }] - Optional parameter with default value
+   */
+  async findOneAndUpdate(
+    schema,
+    model,
+    object,
+    options = {
+      upsert: true,
+      new: true,
+    }
+  ) {
+    const mongoKey = Object.keys(model)[0];
+    const redisKey = schema.modelName + ":" + mongoKey + ":" + model[mongoKey];
+
+    await schema.findOneAndUpdate(model, object, options);
+    await redisClient.set(redisKey, JSON.stringify(object));
+    await redisClient.expire(redisKey, ONE_HOUR);
+
+    debugMsg(`Updated key: ${mongoKey} -> ${redisKey}`);
+  }
+
+  /**
+   *
+   * @param {Schema} schema
+   * @param {Map} model
    */
   async deleteOne(schema, model) {
     const mongoKey = Object.keys(model)[0];
