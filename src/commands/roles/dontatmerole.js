@@ -22,7 +22,7 @@ module.exports = {
     devOnly: false,
     deleted: false,
     guildOnly: true,
-    userPermissions: ["ADMINISTRATOR"],
+    userPermissions: ["Administrator"],
   },
   run: async ({ interaction, client, handler }) => {
     const role = interaction.options.getRole("role");

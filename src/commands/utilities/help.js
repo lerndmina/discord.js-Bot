@@ -49,8 +49,9 @@ module.exports = {
 
       var commandDescription;
 
-      if (resultCommand.description.length > 64) {
-        commandDescription = resultCommand.description.slice(0, 61) + "...";
+      const MAX_LENGTH = 64;
+      if (resultCommand.description.length > MAX_LENGTH) {
+        commandDescription = resultCommand.description.slice(0, MAX_LENGTH - 3) + "...";
       } else commandDescription = resultCommand.description;
 
       commands[commandCategory].push({
