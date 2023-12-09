@@ -122,7 +122,10 @@ module.exports.deleteCommandCooldownKey = function (key) {
 module.exports.redisClient = createClient({
   url: env.REDIS_URL,
 })
-  .on("error", (err) => log.error("Redis Client Error", err))
+  .on("error", (err) => {
+    log.error("Redis Client Error", err);
+    process.exit(1);
+  })
   .on("ready", () => log.info("Redis Client Ready"));
 
 this.Start();

@@ -5,7 +5,7 @@ FROM node:latest
 
 # Install FFmpeg & redis
 RUN apt-get update && \
-  apt-get install -y ffmpeg redis-server
+  apt-get install -y ffmpeg
 
 # Set the working directory
 WORKDIR /app
