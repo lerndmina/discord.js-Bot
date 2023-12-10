@@ -38,7 +38,7 @@ module.exports = async (message, client) => {
     if (user == message.author) return;
     const member = guild.members.cache.get(user.id);
     if (!member) return;
-    if (member.roles.cache.has(roleId)) {
+    if (member.roles.cache.has(roleId) && !env.OWNER_IDS.includes(member.id)) {
       hasRole = true;
     }
   });
