@@ -68,7 +68,7 @@ module.exports = {
     )
     .addSubcommand((subcommand) => subcommand.setName("list").setDescription("List all tags")),
   options: {
-    devOnly: true,
+    devOnly: false,
     deleted: false,
     guildOnly: true,
   },
