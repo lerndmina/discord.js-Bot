@@ -15,8 +15,9 @@ class Database {
    * @param {Schema} schema
    * @param {Map} model
    * @param {boolean} [saveNull=false] - Optional, save null values to cache
+   * @param {number} [cacheTime=ONE_HOUR] - Optional, cache time in seconds
    */
-  async findOne(schema, model, saveNull = false) {
+  async findOne(schema, model, saveNull = false, cacheTime = ONE_HOUR) {
     var start = env.DEBUG_LOG ? Date.now() : undefined;
     if (!schema || !model) {
       throw new Error("Missing schema or model");
@@ -38,13 +39,50 @@ class Database {
         if (!saveNull) return null;
       }
       await redisClient.set(redisKey, JSON.stringify(data));
-      await redisClient.expire(redisKey, ONE_HOUR);
-      if (env.DEBUG_LOG) debugMsg(`Time taken: ${Date.now() - start}ms`);
+      await redisClient.expire(redisKey, cacheTime);
+      if (env.DEBUG_LOG) debugMsg(`DB - findOne - Time taken: ${Date.now() - start}ms`);
       return data;
     }
 
     debugMsg(`Cache hit: ${redisKey} -> ${data}`);
-    if (env.DEBUG_LOG) debugMsg(`Time taken: ${Date.now() - start}ms`);
+    if (env.DEBUG_LOG) debugMsg(`DB - findOne - Time taken: ${Date.now() - start}ms`);
+    return JSON.parse(data);
+  }
+
+  /**
+   * @param {Schema} schema
+   * @param {Map} model
+   * @param {boolean} [saveNull=false] - Optional, save null values to cache
+   * @param {number} [cacheTime=ONE_HOUR] - Optional, cache time in seconds
+   * @description Finds all the documents in the database that match the model
+   */
+  async find(schema, model, saveNull = false, cacheTime = ONE_HOUR) {
+    var start = env.DEBUG_LOG ? Date.now() : undefined;
+    if (!schema || !model) {
+      throw new Error("Missing schema or model");
+    }
+    const mongoKey = Object.keys(model)[0];
+    const redisKey = schema.modelName + ":" + mongoKey + ":" + model[mongoKey];
+    debugMsg(`Key: ${mongoKey} -> ${redisKey}`);
+
+    debugMsg(`Fetching from cache: ${redisKey}`);
+    var data = await redisClient.get(redisKey);
+
+    if (!data || data.length == 0) {
+      debugMsg(`Cache miss fetching db:`);
+      debugMsg(model);
+      data = await schema.find(model);
+      if (!data) {
+        debugMsg(`Database miss no data found`);
+        if (!saveNull) return null;
+      }
+      await redisClient.set(redisKey, JSON.stringify(data));
+      await redisClient.expire(redisKey, cacheTime);
+      if (env.DEBUG_LOG) debugMsg(`DB - find - Time taken: ${Date.now() - start}ms`);
+      return data;
+    }
+    debugMsg(`Cache hit: ${redisKey} -> ${data}`);
+    if (env.DEBUG_LOG) debugMsg(`DB - find - Time taken: ${Date.now() - start}ms`);
     return JSON.parse(data);
   }
 
@@ -54,6 +92,7 @@ class Database {
    * @param {Map} model
    * @param {Map} object
    * @param {QueryOptions} [options={ upsert: true, new: true }] - Optional parameter with default value
+   * @param {number} [cacheTime=ONE_HOUR] - Optional, cache time in seconds
    */
   async findOneAndUpdate(
     schema,
@@ -62,7 +101,8 @@ class Database {
     options = {
       upsert: true,
       new: true,
-    }
+    },
+    cacheTime = ONE_HOUR
   ) {
     var start = env.DEBUG_LOG ? Date.now() : undefined;
     if (!schema || !model) {
@@ -73,9 +113,9 @@ class Database {
 
     await schema.findOneAndUpdate(model, object, options);
     await redisClient.set(redisKey, JSON.stringify(object));
-    await redisClient.expire(redisKey, ONE_HOUR);
+    await redisClient.expire(redisKey, cacheTime);
 
-    if (env.DEBUG_LOG) debugMsg(`Time taken: ${Date.now() - start}ms`);
+    if (env.DEBUG_LOG) debugMsg(`DB - update - Time taken: ${Date.now() - start}ms`);
     debugMsg(`Updated key: ${mongoKey} -> ${redisKey}`);
   }
 
@@ -95,7 +135,29 @@ class Database {
 
     await redisClient.del(redisKey);
     await schema.deleteOne(model);
-    if (env.DEBUG_LOG) debugMsg(`Time taken: ${Date.now() - start}ms`);
+    if (env.DEBUG_LOG) debugMsg(`DB - delete - Time taken: ${Date.now() - start}ms`);
+  }
+
+  async findOneAndDelete(schema, model) {
+    this.deleteOne(schema, model);
+  }
+
+  /**
+   * @param {String} keyQuery - Keys Pattern https://redis.io/commands/keys/
+   * @returns {Promise<String[]>} - An array of deleted keys
+   * @description Deletes all keys that match the pattern, this only deletes keys in the cache
+   */
+  async cleanCache(keyQuery) {
+    debugMsg(`Cleaning cache with pattern ${keyQuery}`);
+    var start = env.DEBUG_LOG ? Date.now() : undefined;
+    const keys = await redisClient.keys(keyQuery);
+    if (!keys || keys.length == 0) return [];
+    for (const key of keys) {
+      await redisClient.del(key);
+    }
+    debugMsg(`Cleaned ${keys.length} key(s)`);
+    if (env.DEBUG_LOG) debugMsg(`DB - Clean - Time taken: ${Date.now() - start}ms`);
+    return keys;
   }
 }
 
