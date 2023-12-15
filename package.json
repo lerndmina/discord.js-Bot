@@ -4,14 +4,14 @@
   "description": "",
   "main": "src/Bot.ts",
   "scripts": {
-    "dev": "npx nodemon",
-    "start": "node src/Bot.ts"
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'npx tsx' src/Bot.ts",
+    "start": "npx tsc && node build/Bot.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "commandkit": "^0.1.2",
+    "commandkit": "^0.1.10",
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
     "fancy-log": "^2.0.0",
@@ -25,6 +25,7 @@
     "whisper-nodejs": "^1.0.0"
   },
   "devDependencies": {
+    "@types/fancy-log": "^2.0.2",
     "@types/node": "^20.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
