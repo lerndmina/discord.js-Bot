@@ -2,10 +2,10 @@
   "name": "bot",
   "version": "1.0.0",
   "description": "",
-  "main": "src/Bot.js",
+  "main": "src/Bot.ts",
   "scripts": {
     "dev": "npx nodemon",
-    "start": "node src/Bot.js"
+    "start": "node src/Bot.ts"
   },
   "author": "",
   "license": "ISC",
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.4.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }
