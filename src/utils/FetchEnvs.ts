@@ -4,7 +4,7 @@ import * as log from "fancy-log";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const fetchEnvs = () => {
+export default function () {
   // Key value array to store the environment variables
   var env: {
   BOT_TOKEN: string,

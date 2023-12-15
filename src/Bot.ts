@@ -1,11 +1,11 @@
-import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { BaseInteraction, Client, GatewayIntentBits, Partials } from "discord.js";
 import { CommandKit } from "commandkit";
 import path from "path";
 import * as log from "fancy-log";
 import mongoose from "mongoose";
 import { config as dotenvConfig } from "dotenv";
 import { createClient } from "redis";
-import { fetchEnvs } from "./utils/FetchEnvs";
+import fetchEnvs from "./utils/FetchEnvs";
 const env = fetchEnvs();
 
 export const Start = async () => {
@@ -48,7 +48,7 @@ export const Start = async () => {
  * @type {string[]}
  * @description Random funny bot messages for a footer.
  */
-module.exports.BOT_MESSAGES = [
+export const BOT_MESSAGES: string[] = [
   "🤖 Humor capacity overload. Please stand by...",
   "🤖 Don't mind me. Just your friendly neighbourhood bot.",
   "🤖 Turning caffeine into code.",
@@ -76,7 +76,7 @@ export const waitingEmoji: string = env.WAITING_EMOJI;
 
 var _commandCooldown = new Map();
 
-export const getKeyString = function (commandName: string, interaction: import("discord.js").Interaction): string {
+export const getKeyString = function (commandName: string, interaction: BaseInteraction): string {
   return `${commandName}-${interaction.user.id}`;
 };
 
