@@ -20,5 +20,8 @@ RUN yarn install
 # Copy the rest of the application files
 COPY . .
 
-# Start the application
-CMD ["yarn", "start"]
+# Compile TypeScript to JavaScript
+RUN tsc
+
+# Set the command to start the app
+CMD [ "node", "dist/index.js" ]

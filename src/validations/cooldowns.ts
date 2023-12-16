@@ -2,10 +2,10 @@ import log from "fancy-log";
 import { getCommandCooldown, deleteCommandCooldownKey, getKeyString } from "../Bot";
 import BasicEmbed from "../utils/BasicEmbed";
 import { get } from "http";
-import { ValidationFunctionProps } from "commandkit";
 import { BaseInteraction, RepliableInteraction } from "discord.js";
+import { ValidationProps } from "commandkit";
 
-export default function ({ interaction, commandObj, handler }: ValidationFunctionProps){
+export default function ({ interaction, commandObj, handler }: ValidationProps) {
   const name = commandObj.data.name;
 
   const now = Date.now();
@@ -26,7 +26,7 @@ export default function ({ interaction, commandObj, handler }: ValidationFunctio
       deleteCommandCooldownKey(userKey);
     }
   }
-};
+}
 
 function hasCooldownMessage(interaction: RepliableInteraction, time: number) {
   const timeLeft = Math.floor(time / 1000);

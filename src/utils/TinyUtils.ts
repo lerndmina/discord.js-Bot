@@ -100,7 +100,7 @@ export async function returnMessage(
   client: Client<true>,
   title: string,
   message: string,
-  args: { error: boolean; firstMsg: boolean } = { error: false, firstMsg: false }
+  args: { error?: boolean; firstMsg?: boolean } = { error: false, firstMsg: false }
 ) {
   const embed = BasicEmbed(
     client,

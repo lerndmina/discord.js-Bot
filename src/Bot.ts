@@ -45,7 +45,6 @@ export const Start = async () => {
 };
 
 /**
- * @type {string[]}
  * @description Random funny bot messages for a footer.
  */
 export const BOT_MESSAGES: string[] = [
@@ -70,7 +69,6 @@ export const BOT_MESSAGES: string[] = [
 export const BOT_URL: string = env.BOT_URL;
 
 export const ROLE_BUTTON_PREFIX = "roleGive-";
-
 
 export const waitingEmoji: string = env.WAITING_EMOJI;
 
