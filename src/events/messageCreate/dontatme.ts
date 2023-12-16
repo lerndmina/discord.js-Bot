@@ -15,7 +15,7 @@ const env = fetchEnvs();
  * @param {Client} client
  * @returns
  */
-module.exports = async (message: Message, client: Client<true>) => {
+export default async (message: Message, client: Client<true>) => {
   if (message.author.bot) return;
   if (!message.mentions.users) return;
   if (message.channel.type === ChannelType.DM) return;
