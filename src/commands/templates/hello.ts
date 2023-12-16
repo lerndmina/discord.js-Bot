@@ -1,7 +1,7 @@
 import type { CommandData, SlashCommandProps, CommandOptions } from "commandkit";
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import log from "fancy-log";
-import { waitingEmoji } from "../../Bot";
+import { globalCooldownKey, setCommandCooldown, waitingEmoji } from "../../Bot";
 
 export const data = new SlashCommandBuilder()
   .setName("hello")
@@ -16,5 +16,7 @@ export const options: CommandOptions = {
 
 export async function run({ interaction, client, handler }: SlashCommandProps) {
   await interaction.reply({ content: waitingEmoji, ephemeral: true });
+  setCommandCooldown(globalCooldownKey(interaction.commandName), 600);
+
   interaction.editReply({ content: "Loading spinner complete" });
 }

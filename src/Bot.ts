@@ -1,4 +1,4 @@
-import { BaseInteraction, Client, GatewayIntentBits, Partials } from "discord.js";
+import { BaseInteraction, Client, GatewayIntentBits, Partials, Snowflake } from "discord.js";
 import { CommandKit } from "commandkit";
 import path from "path";
 import * as log from "fancy-log";
@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import { config as dotenvConfig } from "dotenv";
 import { createClient } from "redis";
 import fetchEnvs from "./utils/FetchEnvs";
+import { debugMsg } from "./utils/TinyUtils";
 const env = fetchEnvs();
 
 export const Start = async () => {
@@ -74,24 +75,29 @@ export const waitingEmoji: string = env.WAITING_EMOJI;
 
 var _commandCooldown = new Map();
 
-export const getKeyString = function (commandName: string, interaction: BaseInteraction): string {
-  return `${commandName}-${interaction.user.id}`;
-};
+export const COOLDOWN_PREFIX = "cooldown";
 
-export const getCommandCooldownMap = function (): Map<string, number> {
-  return _commandCooldown;
-};
+export function guildCooldownKey(guildId: Snowflake, commandName: string) {
+  return `${COOLDOWN_PREFIX}:${guildId}:${commandName}`;
+}
 
-export const getCommandCooldown = function (key: string): number | undefined {
-  return _commandCooldown.get(key);
-};
+export function userCooldownKey(userId: Snowflake, commandName: string) {
+  return `${COOLDOWN_PREFIX}:${userId}:${commandName}`;
+}
 
-export const setCommandCooldown = function (key: string, value: number) {
-  _commandCooldown.set(key, value);
-};
+export function globalCooldownKey(commandName: string) {
+  return `${COOLDOWN_PREFIX}:${commandName}`;
+}
 
-export const deleteCommandCooldownKey = function (key: string): boolean {
-  return _commandCooldown.delete(key);
+export const setCommandCooldown = async function (key: string, cooldownSeconds: number) {
+  const time = Date.now() + cooldownSeconds * 1000;
+  const setting = await redisClient.set(key, time);
+  debugMsg(
+    setting
+      ? `Set cooldown for ${key} for ${cooldownSeconds}s`
+      : `Failed to set cooldown for ${key}`
+  );
+  await redisClient.expire(key, cooldownSeconds);
 };
 
 export const redisClient = createClient({
