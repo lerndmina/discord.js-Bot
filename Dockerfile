@@ -21,7 +21,7 @@ RUN yarn install
 COPY . .
 
 # Compile TypeScript to JavaScript
-RUN tsc
+RUN npx tsc
 
 # Set the command to start the app
 CMD [ "node", "dist/Bot.js" ]
