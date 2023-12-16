@@ -17,7 +17,7 @@ const env = fetchEnvs();
  */
 export default async (message: Message, client: Client<true>) => {
   if (message.author.bot) return;
-  if (!message.mentions.users) return;
+  if (message.mentions.users.size < 1) return;
   if (message.channel.type === ChannelType.DM) return;
   if (message.mentions.users.has(message.author.id) && message.mentions.users.size === 1) return;
 
