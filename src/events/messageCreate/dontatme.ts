@@ -1,12 +1,13 @@
-const { Message, Client, ChannelType } = require("discord.js");
-var log = require("fancy-log");
-const { Database } = require("../../utils/cache/database");
-const { ThingGetter, debugMsg } = require("../../utils/TinyUtils");
-const RoleButtons = require("../../models/RoleButtons");
-const DontAtMeRole = require("../../models/DontAtMeRole");
-const BasicEmbed = require("../../utils/BasicEmbed");
+import { Message, Client, ChannelType } from "discord.js";
+import log from "fancy-log";
+import Database from "../../utils/cache/database";
+import { ThingGetter, debugMsg } from "../../utils/TinyUtils";
+import RoleButtons from "../../models/RoleButtons";
+import DontAtMeRole from "../../models/DontAtMeRole";
+import BasicEmbed from "../../utils/BasicEmbed";
 
-const env = require("../../utils/FetchEnvs")();
+import fetchEnvs from "../../utils/FetchEnvs";
+const env = fetchEnvs();
 
 /**
  *
@@ -14,14 +15,14 @@ const env = require("../../utils/FetchEnvs")();
  * @param {Client} client
  * @returns
  */
-module.exports = async (message, client) => {
+module.exports = async (message: Message, client: Client<true>) => {
   if (message.author.bot) return;
   if (!message.mentions.users) return;
   if (message.channel.type === ChannelType.DM) return;
   if (message.mentions.users.has(message.author.id) && message.mentions.users.size === 1) return;
 
   const db = new Database();
-  const guildId = message.guild.id;
+  const guildId = message.guild!.id; // This is safe because we check for DMs above
   const fetchedRole = await db.findOne(DontAtMeRole, { guildId: guildId }, true);
   if (!fetchedRole) return;
 
