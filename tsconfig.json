@@ -4,7 +4,8 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "skipLibCheck": true
   },
   "include": ["src/**/*.ts", "declarations.d.ts"],
   "exclude": ["node_modules"]
