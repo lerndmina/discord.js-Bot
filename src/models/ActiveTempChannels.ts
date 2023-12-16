@@ -1,14 +1,15 @@
-const { Schema, model } = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const ActiveTempChannels = new Schema({
-  guildID: {
-    type: String,
-    required: true,
-  },
-  channelIDs: {
-    type: [String],
-    default: [],
-  },
-});
-
-module.exports = model("ActiveTempChannels", ActiveTempChannels);
+export default model(
+  "ActiveTempChanels",
+  new Schema({
+    guildID: {
+      type: String,
+      required: true,
+    },
+    channelIDs: {
+      type: [String],
+      default: [],
+    },
+  })
+);

@@ -1,19 +1,20 @@
-const { Schema, model } = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const RoleButtons = new Schema({
-  buttonId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  guildId: {
-    type: String,
-    required: true,
-  },
-  roleId: {
-    type: String,
-    required: true,
-  },
-});
-
-module.exports = model("RoleButtons", RoleButtons);
+export default model(
+  "RoleButtons",
+  new Schema({
+    buttonId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    guildId: {
+      type: String,
+      required: true,
+    },
+    roleId: {
+      type: String,
+      required: true,
+    },
+  })
+);

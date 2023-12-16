@@ -1,15 +1,16 @@
-const { Schema, model } = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const DontAtMeRole = new Schema({
-  roleId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  guildId: {
-    type: String,
-    required: true,
-  },
-});
-
-module.exports = model("DontAtMeRole", DontAtMeRole);
+export default model(
+  "DontAtMeRole",
+  new Schema({
+    roleId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    guildId: {
+      type: String,
+      required: true,
+    },
+  })
+);

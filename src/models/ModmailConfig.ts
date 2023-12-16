@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+import { Schema, model } from "mongoose";
 
 const ModmailConfig = new Schema({
   guildId: {
@@ -15,4 +15,4 @@ const ModmailConfig = new Schema({
   },
 });
 
-module.exports = model("ModmailConfig", ModmailConfig);
+export default model("ModmailConfig", ModmailConfig);

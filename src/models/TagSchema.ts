@@ -1,18 +1,19 @@
-const { Schema, model } = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const TagSchema = new Schema({
-  key: {
-    type: String,
-    required: true,
-  },
-  guildId: {
-    type: String,
-    required: true,
-  },
-  tag: {
-    type: String,
-    required: true,
-  },
-});
-
-module.exports = model("TagSchema", TagSchema);
+export default model(
+  "TagSchema",
+  new Schema({
+    key: {
+      type: String,
+      required: true,
+    },
+    guildId: {
+      type: String,
+      required: true,
+    },
+    tag: {
+      type: String,
+      required: true,
+    },
+  })
+);

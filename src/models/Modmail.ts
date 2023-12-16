@@ -1,30 +1,31 @@
-const { Schema, model } = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const Modmail = new Schema({
-  guildId: {
-    type: String,
-    required: true,
-  },
-  forumThreadId: {
-    type: String,
-    required: true,
-  },
-  forumChannelId: {
-    type: String,
-    required: true,
-  },
-  userId: {
-    type: String,
-    required: true,
-  },
-  webhookId: {
-    type: String,
-    required: true,
-  },
-  webhookToken: {
-    type: String,
-    required: true,
-  },
-});
-
-module.exports = model("Modmail", Modmail);
+export default model(
+  "Modmail",
+  new Schema({
+    guildId: {
+      type: String,
+      required: true,
+    },
+    forumThreadId: {
+      type: String,
+      required: true,
+    },
+    forumChannelId: {
+      type: String,
+      required: true,
+    },
+    userId: {
+      type: String,
+      required: true,
+    },
+    webhookId: {
+      type: String,
+      required: true,
+    },
+    webhookToken: {
+      type: String,
+      required: true,
+    },
+  })
+);
