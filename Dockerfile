@@ -24,4 +24,4 @@ COPY . .
 RUN tsc
 
 # Set the command to start the app
-CMD [ "node", "dist/index.js" ]
+CMD [ "node", "dist/Bot.js" ]
