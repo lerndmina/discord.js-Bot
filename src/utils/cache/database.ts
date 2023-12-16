@@ -94,8 +94,8 @@ export default class Database {
    */
   async findOneAndUpdate(
     schema: any,
-    model: any,
-    object: Model<any>,
+    model: any, // This is probably unsafe but I don't know how to fix it
+    object: any,
     options = {
       upsert: true,
       new: true,
