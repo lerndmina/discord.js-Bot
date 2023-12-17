@@ -83,25 +83,16 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
   const subcommand = interaction.options.getSubcommand();
   const guild = interaction.guild;
 
-  if (!name || !content || !subcommand || !guild) {
-    return returnMessage(
-      interaction,
-      client,
-      COMMAND_NAME_TITLE,
-      `Interaction submitted without required parameters.`,
-      { error: true }
-    );
-  }
-
   try {
     if (subcommand == "add") {
-      addTag(interaction, client, name, content, guild);
+      // I am overriding typescript to say these are not null
+      addTag(interaction, client, name!, content!, guild!);
     } else if (subcommand == "delete") {
-      deleteTag(interaction, client, name, guild);
+      deleteTag(interaction, client, name!, guild!);
     } else if (subcommand == "send") {
-      sendTag(interaction, client, name, guild, user as User);
+      sendTag(interaction, client, name!, guild!, user as User);
     } else if (subcommand == "list") {
-      listTags(interaction, client, guild);
+      listTags(interaction, client, guild!);
     }
   } catch (error: any) {
     return returnMessage(

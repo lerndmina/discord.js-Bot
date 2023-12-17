@@ -41,7 +41,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
     });
   }
 
-  await interaction.reply(waitingEmoji);
+  await interaction.reply({ content: waitingEmoji, ephemeral: true });
 
   if (!interaction.guild)
     return interaction.editReply("‼️ Error, somehow this command was ran in a DM?");
