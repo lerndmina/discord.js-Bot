@@ -23,11 +23,11 @@ const env = FetchEnvs();
 var alreadyProcessed = false;
 export default async function (reaction: MessageReaction, user: User, client: Client<true>) {
   if (reaction.partial) await reaction.fetch(); // Fetch the reaction
-  const message = await reaction.message.fetch(); // Fetch the message
-
-  logger(`[MESSAGE REACTION ADD] ${user.tag} reacted ${reaction.emoji} to a message.`);
+  const message = await reaction.message.fetch(); // Fetch the messag
 
   if (user.bot) return;
+
+  logger(`[MESSAGE REACTION ADD] ${user.tag} reacted ${reaction.emoji} to a message.`);
 
   if (message.flags.bitfield != MessageFlags.IsVoiceMessage || message.attachments.size != 1)
     return;
