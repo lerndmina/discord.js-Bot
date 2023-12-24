@@ -71,6 +71,6 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
 
   const db = new Database();
   await db.deleteOne(Modmail, { forumThreadId: forumThread.id });
-
+  await db.cleanCache("Modmail:userId:*");
   await interaction.editReply("🎉 Successfully closed modmail thread!");
 }
