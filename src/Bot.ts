@@ -100,6 +100,10 @@ export const setCommandCooldown = async function (key: string, cooldownSeconds: 
   await redisClient.expire(key, cooldownSeconds);
 };
 
+export function removeMentions(str: string) {
+  return str.replace(/<@.*?>|@here|@everyone/g, "");
+}
+
 export const redisClient = createClient({
   url: env.REDIS_URL,
 })

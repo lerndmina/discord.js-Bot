@@ -25,7 +25,7 @@ import BasicEmbed from "../../utils/BasicEmbed";
 import Modmail from "../../models/Modmail";
 import ModmailConfig from "../../models/ModmailConfig";
 import ButtonWrapper from "../../utils/ButtonWrapper";
-import { waitingEmoji } from "../../Bot";
+import { removeMentions, waitingEmoji } from "../../Bot";
 import { postWebhookToThread, ThingGetter } from "../../utils/TinyUtils";
 import Database from "../../utils/cache/database";
 import { Url } from "url";
@@ -212,17 +212,20 @@ async function newModmail(customIds: string[], message: Message, user: User, cli
 
       const channel = (await getter.getChannel(channelId)) as unknown as ForumChannel; // TODO: This is unsafe
       const threads = channel.threads;
+      const noMentionsMessage = removeMentions(message.content);
       const thread = await threads.create({
         name: `${
-          message.cleanContent.length >= MAX_TITLE_LENGTH
-            ? `${message.cleanContent.slice(0, MAX_TITLE_LENGTH)}...`
-            : message.cleanContent
+          noMentionsMessage.length >= MAX_TITLE_LENGTH
+            ? `${noMentionsMessage.slice(0, MAX_TITLE_LENGTH)}...`
+            : noMentionsMessage
         } - ${memberName}`,
         autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
         message: {
-          content: `Modmail thread for ${memberName} | ${i.user.id}\n\n Original message: ${
-            message.cleanContent
-          }${member.pending ? "\n\nUser has not fully joined the guild." : ""}`,
+          content: `Modmail thread for ${memberName} | ${
+            i.user.id
+          }\n\n Original message: ${noMentionsMessage}${
+            member.pending ? "\n\nUser has not fully joined the guild." : ""
+          }`,
         },
       });
 
@@ -238,7 +241,7 @@ async function newModmail(customIds: string[], message: Message, user: User, cli
           BasicEmbed(
             client,
             "Modmail",
-            "`Hey! ${memberName} has opened a modmail thread!`",
+            `Hey! ${memberName} has opened a modmail thread!`,
             undefined,
             "Random"
           ),
@@ -285,16 +288,17 @@ async function newModmail(customIds: string[], message: Message, user: User, cli
  * @param {Client} client
  */
 async function sendMessage(mail: any, message: Message, client: Client<true>) {
+  const cleanMessageContent = removeMentions(message.content);
   const getter = new ThingGetter(client);
   try {
     const guild = await getter.getGuild(mail.guildId);
     const thread = (await getter.getChannel(mail.forumThreadId)) as ThreadChannel;
     const webhook = await client.fetchWebhook(mail.webhookId, mail.webhookToken);
     if (
-      !(await postWebhookToThread(webhook.url as unknown as Url, thread.id, message.cleanContent))
+      !(await postWebhookToThread(webhook.url as unknown as Url, thread.id, cleanMessageContent))
     ) {
       thread.send(
-        `${message.author.username} says: ${message.cleanContent}\n\n\`\`\`This message failed to send as a webhook, please contact the bot developer.\`\`\``
+        `${message.author.username} says: ${cleanMessageContent}\n\n\`\`\`This message failed to send as a webhook, please contact the bot developer.\`\`\``
       );
       log.error("Failed to send message to thread, sending normally.");
     }
