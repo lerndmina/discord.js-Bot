@@ -113,12 +113,12 @@ async function newModmail(customIds: string[], message: Message, user: User, cli
     const orignalMsg = await i.update({ content: waitingEmoji, components: [], embeds: [] });
 
     if (i.customId === customIds[1]) {
-      // Cancel button
+      // Cancel button clicked
       await orignalMsg.delete();
       return;
     }
 
-    // Create button
+    // Create button clicked
     // TODO: Look up which servers the user and bot are in that both have modmail enabled
     const sharedGuilds: Guild[] = [];
     const cachedGuilds = client.guilds.cache;
