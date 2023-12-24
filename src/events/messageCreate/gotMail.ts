@@ -212,17 +212,16 @@ async function newModmail(customIds: string[], message: Message, user: User, cli
 
       const channel = (await getter.getChannel(channelId)) as unknown as ForumChannel; // TODO: This is unsafe
       const threads = channel.threads;
-      log(threads);
       const thread = await threads.create({
         name: `${
-          message.content.length >= MAX_TITLE_LENGTH
-            ? `${message.content.slice(0, MAX_TITLE_LENGTH)}...`
-            : message.content
+          message.cleanContent.length >= MAX_TITLE_LENGTH
+            ? `${message.cleanContent.slice(0, MAX_TITLE_LENGTH)}...`
+            : message.cleanContent
         } - ${memberName}`,
         autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
         message: {
           content: `Modmail thread for ${memberName} | ${i.user.id}\n\n Original message: ${
-            message.content
+            message.cleanContent
           }${member.pending ? "\n\nUser has not fully joined the guild." : ""}`,
         },
       });
@@ -291,9 +290,11 @@ async function sendMessage(mail: any, message: Message, client: Client<true>) {
     const guild = await getter.getGuild(mail.guildId);
     const thread = (await getter.getChannel(mail.forumThreadId)) as ThreadChannel;
     const webhook = await client.fetchWebhook(mail.webhookId, mail.webhookToken);
-    if (!(await postWebhookToThread(webhook.url as unknown as Url, thread.id, message.content))) {
+    if (
+      !(await postWebhookToThread(webhook.url as unknown as Url, thread.id, message.cleanContent))
+    ) {
       thread.send(
-        `${message.author.username} says: ${message.content}\n\n\`\`\`This message failed to send as a webhook, please contact the bot developer.\`\`\``
+        `${message.author.username} says: ${message.cleanContent}\n\n\`\`\`This message failed to send as a webhook, please contact the bot developer.\`\`\``
       );
       log.error("Failed to send message to thread, sending normally.");
     }
@@ -316,5 +317,5 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
   }
   const getter = new ThingGetter(client);
   if (lastMessage.author.id === client.user.id)
-    (await getter.getUser(mail.userId)).send({ content: message.content });
+    (await getter.getUser(mail.userId)).send({ content: message.cleanContent });
 }
