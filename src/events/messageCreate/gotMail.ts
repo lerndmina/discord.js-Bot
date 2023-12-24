@@ -317,8 +317,10 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
   }
   const getter = new ThingGetter(client);
   if (lastMessage.author.id === client.user.id) {
+    if (message.content.startsWith(".")) {
+      return message.react("🕵️"); // Messages starting with ! are staff only
+    }
     (await getter.getUser(mail.userId)).send({ content: message.cleanContent });
-    if (message.content.startsWith(".")) return message.react("🕵️"); // Messages starting with ! are staff only
     return message.react("📨");
   }
 }
