@@ -210,8 +210,9 @@ async function newModmail(customIds: string[], message: Message, user: User, cli
       const member = await getter.getMember(guild, i.user.id);
       const memberName = member.nickname || member.user.displayName;
 
-      const channel = getter.getChannel(channelId) as unknown as ForumChannel; // TODO: This is unsafe
+      const channel = (await getter.getChannel(channelId)) as unknown as ForumChannel; // TODO: This is unsafe
       const threads = channel.threads;
+      log(threads);
       const thread = await threads.create({
         name: `${
           message.content.length >= MAX_TITLE_LENGTH
