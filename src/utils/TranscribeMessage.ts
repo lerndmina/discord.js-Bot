@@ -8,6 +8,7 @@ import DeleteFile from "./DeleteFile";
 import ConvertFile from "./ConvertFile";
 import { Client, Message } from "discord.js";
 import { Url } from "url";
+import FetchEnvs from "./FetchEnvs";
 
 export default async function (client: Client<true>, message: Message, apiKey: string) {
   const whisper = new Whisper(apiKey);
@@ -15,10 +16,12 @@ export default async function (client: Client<true>, message: Message, apiKey: s
   ffmpeg.getAvailableFormats(function (err, formats) {
     if (err) {
       log.error(`FFMPEG ERR: ${err}`);
-      message.reply(
-        "Sorry, there was an error while trying to load FFMPEG. Please try again later."
+      const env = FetchEnvs();
+      return message.reply(
+        `Sorry, there was an error while trying to load FFMPEG. <@${
+          env.OWNER_IDS[0]
+        }> help me! This happened at <t:${Math.floor(Date.now() / 1000)}>`
       );
-      process.exit(1);
     }
   });
 
