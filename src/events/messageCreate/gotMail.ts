@@ -26,7 +26,7 @@ import Modmail from "../../models/Modmail";
 import ModmailConfig from "../../models/ModmailConfig";
 import ButtonWrapper from "../../utils/ButtonWrapper";
 import { removeMentions, waitingEmoji } from "../../Bot";
-import { postWebhookToThread, ThingGetter } from "../../utils/TinyUtils";
+import { isVoiceMessage, postWebhookToThread, ThingGetter } from "../../utils/TinyUtils";
 import Database from "../../utils/cache/database";
 import { Url } from "url";
 const MAX_TITLE_LENGTH = 50;

@@ -1,8 +1,9 @@
 import { MessageType, MessageFlags, ActivityType, Message, Client, ChannelType } from "discord.js";
-import log from "fancy-log"
+import log from "fancy-log";
 import syncCommands from "../../utils/unregister-commands";
 import BasicEmbed from "../../utils/BasicEmbed";
 import FetchEnvs from "../../utils/FetchEnvs";
+import { isVoiceMessage } from "../../utils/TinyUtils";
 
 const env = FetchEnvs();
 
@@ -14,17 +15,18 @@ const BANNED_GUILDS = ["856937743543304203"];
  * @param {Client} client
  * @returns
  */
-export default async function (message: Message, client: Client<true>)  {
+export default async function (message: Message, client: Client<true>) {
   if (message.author.bot) return;
+  if (message.channel.type == ChannelType.DM) return;
+  // We don't return true here because we want to continue to the next event
 
   // Send reactions for transcriptions
-  if (message.flags.bitfield === MessageFlags.IsVoiceMessage && message.attachments.size == 1) {
+  if (isVoiceMessage(message)) {
     if (message.reactions.cache.size > 0) return;
     message.react("✍️").then(() => message.react("❌"));
+    return true; // Stop the event loop we've delt with this message
   }
 
-  // Everything else can't be run in DMs
-  if (message.channel.type == ChannelType.DM) return;
   // Make message of type Message<true>
   message = message as Message<true>;
   if (message.guildId && BANNED_GUILDS.includes(message.guildId)) return;
@@ -60,7 +62,7 @@ export default async function (message: Message, client: Client<true>)  {
     } else if (message.guildId) {
       syncCommands(client, message, message.guildId, false);
       return true;
-  }
+    }
   }
 
   // Reboot command
@@ -98,4 +100,4 @@ export default async function (message: Message, client: Client<true>)  {
 
     await Start();
   }
-};
+}

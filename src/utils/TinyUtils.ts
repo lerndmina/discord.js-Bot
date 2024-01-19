@@ -13,6 +13,8 @@ import {
   InteractionReplyOptions,
   Base,
   RepliableInteraction,
+  MessageFlags,
+  Message,
 } from "discord.js";
 import FetchEnvs from "./FetchEnvs";
 import log from "fancy-log";
@@ -25,6 +27,10 @@ export function sleep(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
+
+export function isVoiceMessage(message: Message) {
+  return message.flags.bitfield === MessageFlags.IsVoiceMessage && message.attachments.size == 1;
 }
 
 export async function postWebhookToThread(url: Url, threadId: Snowflake, content: string) {
