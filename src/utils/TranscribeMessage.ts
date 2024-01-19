@@ -2,7 +2,7 @@ import log from "fancy-log";
 import https from "https";
 import fs from "fs";
 import ffmpeg from "fluent-ffmpeg";
-import Whisper from "whisper-nodejs"; 
+import Whisper from "whisper-nodejs";
 import DownloadFile from "./DownloadFile";
 import DeleteFile from "./DeleteFile";
 import ConvertFile from "./ConvertFile";
@@ -36,7 +36,7 @@ export default async function (client: Client<true>, message: Message, apiKey: s
     message.reply("Sorry, I can only transcribe files smaller than 8MB.");
     return;
   } else {
-    await message.channel.sendTyping();
+    message.channel.sendTyping();
   }
 
   // Download the attachment and name it the current timestamp
@@ -55,7 +55,7 @@ export default async function (client: Client<true>, message: Message, apiKey: s
       message.reply(`✨ Voice Transcription:\n\n\`\`\`${text}\`\`\``);
       log(
         `Transcribed a message from ${message.author.username} in ${
-          !(message.channel.isDMBased()) ? message.channel.name : "Direct Messages"
+          !message.channel.isDMBased() ? message.channel.name : "Direct Messages"
         }`
       );
       DeleteFile(fileName, "mp3");
@@ -66,4 +66,4 @@ export default async function (client: Client<true>, message: Message, apiKey: s
     });
 
   return true;
-};
+}
