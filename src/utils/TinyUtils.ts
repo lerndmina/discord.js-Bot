@@ -20,6 +20,7 @@ import FetchEnvs from "./FetchEnvs";
 import log from "fancy-log";
 import BasicEmbed from "./BasicEmbed";
 import { Url } from "url";
+import chalk from "chalk";
 
 const env = FetchEnvs();
 
@@ -161,4 +162,46 @@ export function parseNewlines(string: string) {
 
 export function getTagName(tagKey: string) {
   return tagKey.split(":")[1];
+}
+
+export async function uploadImgurFromBase64(base64Image: string) {
+  const clientId = env.IMGUR_CLIENT_ID;
+  const url = "https://api.imgur.com/3/image";
+
+  // Strip data URI scheme if present (assuming base64 encoded image starts with data:image)
+  const strippedImage = base64Image.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Client-ID ${clientId}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        image: strippedImage,
+        type: "base64",
+      }),
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    return null;
+  }
+}
+
+export function stripMotdColor(text: string) {
+  // Regular expression to match the color code pattern (§ followed by any character)
+  const colorCodeRegex = /§./g;
+
+  return text.replace(colorCodeRegex, "");
+}
+
+export function flattenStringArray(array: string[] | string) {
+  if (typeof array === "string") {
+    return array;
+  }
+  return array.join("\n");
 }

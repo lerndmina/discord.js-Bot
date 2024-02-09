@@ -4,6 +4,7 @@ import log from "fancy-log";
 import { globalCooldownKey, setCommandCooldown, waitingEmoji } from "../../Bot";
 import mc from "minecraft-protocol";
 import FetchEnvs from "../../utils/FetchEnvs";
+import { flattenStringArray, stripMotdColor, uploadImgurFromBase64 } from "../../utils/TinyUtils";
 
 const env = FetchEnvs();
 
@@ -18,15 +19,15 @@ export const data = new SlashCommandBuilder()
   .setDMPermission(true);
 
 export const options: CommandOptions = {
-  devOnly: true,
+  devOnly: false,
   deleted: false,
 };
 
 export async function run({ interaction, client, handler }: SlashCommandProps) {
-  await interaction.reply({ content: waitingEmoji, ephemeral: true });
+  await interaction.reply({ content: waitingEmoji, ephemeral: false });
   setCommandCooldown(globalCooldownKey(interaction.commandName), 60);
 
-  await mc.ping(server, function (err, resp) {
+  await mc.ping(server, async function (err, resp) {
     if (err) {
       log.error(err);
       interaction.editReply(`Error pinging \`${server.host}\`: ${err}`);
@@ -37,12 +38,13 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
       return console.log("We don't handle old style pings sorry.");
     }
     const res = resp as mc.NewPingResult;
+
     const embed = new EmbedBuilder()
-      .setTitle("🏓 Server Status")
+      .setTitle(`🏓 ${server.host} Status`)
       .addFields(
         {
-          name: "Server",
-          value: `\`${server.host}:${server.port}\``,
+          name: "Ping",
+          value: `\`${res.latency}ms\``,
         },
         {
           name: "Version",
@@ -53,7 +55,27 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
           value: `${res.players.online}/${res.players.max}`,
         }
       )
-      .setColor("#0099ff");
+      .setColor("Random");
+
+    if (res.favicon) {
+      const imgurResponse = await uploadImgurFromBase64(res.favicon);
+
+      if (imgurResponse.success) {
+        embed.setThumbnail(imgurResponse.data.link);
+      } else {
+        log.error("Error uploading imgur", imgurResponse);
+      }
+    }
+
+    if (typeof res.description === "object" && "text" in res.description) {
+      if (res.description.text) {
+        embed.addFields({
+          name: "Description",
+          value: stripMotdColor(flattenStringArray(res.description.text)),
+        });
+      }
+    }
+
     interaction.editReply({ embeds: [embed], content: "" });
   });
 }
