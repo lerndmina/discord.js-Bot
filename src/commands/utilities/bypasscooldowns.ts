@@ -19,7 +19,7 @@ export const data = new SlashCommandBuilder()
   );
 
 export const options: CommandOptions = {
-  devOnly: true,
+  devOnly: false,
   guildOnly: false,
   deleted: false,
 };
@@ -64,5 +64,5 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
     );
   }
 
-  interaction.editReply(`Bypassing all command cooldowns until <t:${timeInSeconds}:T>.`);
+  interaction.editReply(`Bypassing all command cooldowns for ${time}...`);
 }
