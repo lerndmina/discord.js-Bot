@@ -1,13 +1,14 @@
-import type { CommandData, SlashCommandProps, CommandOptions } from 'commandkit';
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js"
-import log from "fancy-log"
+import type { CommandData, SlashCommandProps, CommandOptions } from "commandkit";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import log from "fancy-log";
+import { waitingEmoji } from "../../Bot";
 
-
-export const data = new SlashCommandBuilder().setName("ping")
-.setDescription("Replies with Pong!")
-.addBooleanOption((option) =>
-  option.setName("private").setDescription("Whether to reply privately or not").setRequired(false)
-);
+export const data = new SlashCommandBuilder()
+  .setName("ping")
+  .setDescription("Replies with Pong!")
+  .addBooleanOption((option) =>
+    option.setName("private").setDescription("Whether to reply privately or not").setRequired(false)
+  );
 
 export const options: CommandOptions = {
   devOnly: false,
@@ -15,7 +16,7 @@ export const options: CommandOptions = {
   deleted: false,
 };
 
-export async function run({interaction, client, handler}: SlashCommandProps) {
+export async function run({ interaction, client, handler }: SlashCommandProps) {
   var isPrivate = interaction.options.getBoolean("private");
 
   if (isPrivate == null) isPrivate = true;
@@ -25,19 +26,25 @@ export async function run({interaction, client, handler}: SlashCommandProps) {
   const latency = currentTime - timestamp;
   var latencyString = "";
   if (latency < 0) {
-    latencyString = "< 0";
+    latencyString = `${latency}ms (This is probably wrong)\n\nAt least you know the bot is alive lmao!`;
   } else {
-    latencyString = latency.toString();
+    latencyString = latency.toString() + "ms";
   }
 
   var wsPing = interaction.client.ws.ping;
   var deferred = false;
 
-  if (wsPing == -1) {
+  if (wsPing < 5 || latency < 5) {
     var preEmbed = new EmbedBuilder()
       .setTitle("🏓 Pong!")
-      .addFields({ name: `Websocket`, value: `Bot just started, pinging again...` })
-      .addFields({ name: `Message Latency`, value: `${latencyString}ms` })
+      .addFields({
+        name: `Websocket`,
+        value: `This ping is probably invalid. Trying again... ${waitingEmoji}`,
+      })
+      .addFields({
+        name: `Message Latency`,
+        value: `${latencyString}`,
+      })
       .setColor("#0099ff");
     await interaction.reply({ embeds: [preEmbed], ephemeral: isPrivate });
 
@@ -49,7 +56,7 @@ export async function run({interaction, client, handler}: SlashCommandProps) {
   const postEmbed = new EmbedBuilder()
     .setTitle("🏓 Pong!")
     .addFields({ name: `Websocket`, value: `${wsPing}ms` })
-    .addFields({ name: `Message Latency`, value: `${latencyString}ms` })
+    .addFields({ name: `Message Latency`, value: `${latencyString}` })
     .setColor("#0099ff");
 
   if (deferred) {
@@ -57,4 +64,4 @@ export async function run({interaction, client, handler}: SlashCommandProps) {
   } else {
     await interaction.reply({ embeds: [postEmbed], ephemeral: isPrivate });
   }
-};
+}
