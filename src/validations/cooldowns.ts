@@ -20,12 +20,7 @@ export default async function ({ interaction, commandObj, handler }: ValidationP
     const key = `bypasscooldowns:${interaction.user.id}`;
     const res = await redisClient.get(key);
     if (res === "true") {
-      debugMsg(`Bypassing cooldowns for ${interaction.user.id}... Key = ${key} - Value = ${res}`);
-      sendDM(
-        interaction.user.id,
-        `Hey! You just bypassed a cooldown. Do you feel good about yourself huh punk?`,
-        interaction.client
-      );
+      debugMsg(`Bypassing cooldown for ${interaction.user.id}... Key = ${key} - Value = ${res}`);
       return false;
     }
   }
