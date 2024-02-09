@@ -10,10 +10,25 @@ import BasicEmbed from "../utils/BasicEmbed";
 import { get } from "http";
 import { BaseInteraction, RepliableInteraction } from "discord.js";
 import { ValidationProps } from "commandkit";
-import { debugMsg } from "../utils/TinyUtils";
+import { debugMsg, sendDM } from "../utils/TinyUtils";
+import FetchEnvs from "../utils/FetchEnvs";
+const env = FetchEnvs();
 
 export default async function ({ interaction, commandObj, handler }: ValidationProps) {
   if (!interaction.isRepliable()) return;
+  if (env.OWNER_IDS.includes(interaction.user.id)) {
+    const key = `bypasscooldowns:${interaction.user.id}`;
+    const res = await redisClient.get(key);
+    if (res === "true") {
+      debugMsg(`Bypassing cooldowns for ${interaction.user.id}... Key = ${key} - Value = ${res}`);
+      sendDM(
+        interaction.user.id,
+        `Hey! You just bypassed a cooldown. Do you feel good about yourself huh punk?`,
+        interaction.client
+      );
+      return false;
+    }
+  }
   const name = commandObj.data.name;
 
   const globalCooldown = await getCooldown(globalCooldownKey(name));
@@ -51,7 +66,7 @@ async function cooldownMessage(
   const embed = BasicEmbed(
     interaction.client,
     "Cooldown",
-    `The command \`/${commandName}\` is under ${cooldownType} cooldown it will be available <t:${cooldownLeft}:R> `,
+    `The command \`/${commandName}\` is in ${cooldownType} cooldown it will be available <t:${cooldownLeft}:R> `,
     undefined,
     "Red"
   );
