@@ -47,6 +47,21 @@ export async function postWebhookToThread(url: Url, threadId: Snowflake, content
   return true;
 }
 
+export async function sendDM(userId: Snowflake, content: string, client: Client<true>) {
+  try {
+    const thingGetter = new ThingGetter(client);
+    const user = await thingGetter.getUser(userId);
+    return await user.send(content);
+  } catch (error) {
+    log.error(
+      "Failed to send a DM to user: " +
+        userId +
+        "I probably don't have permission to send DMs to them. Error to follow:"
+    );
+    log.error(error);
+  }
+}
+
 export class ThingGetter {
   typeMap: { users: string; channels: string; guilds: string };
   client: Client<true>;
