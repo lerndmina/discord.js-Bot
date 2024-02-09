@@ -2,7 +2,12 @@ import { SnowflakeUtil } from "discord.js";
 import * as log from "fancy-log";
 
 import dotenv from "dotenv";
+import chalk from "chalk";
 dotenv.config();
+
+const OPTIONAL_STRING = "optional";
+
+var accessedCount = 0;
 
 export default function () {
   // Key value array to store the environment variables
@@ -20,6 +25,9 @@ export default function () {
     DEBUG_LOG: boolean;
     MC_SERVER_IP: string;
     MC_SERVER_PORT: number;
+    MC_SERVER_UPTIME_URL: string;
+    IMGUR_CLIENT_ID: string;
+    IMGUR_CLIENT_SECRET: string;
   } = {
     BOT_TOKEN: process.env.BOT_TOKEN || "",
     OWNER_IDS: (process.env.OWNER_IDS || "").split(","),
@@ -34,6 +42,9 @@ export default function () {
     DEBUG_LOG: process.env.DEBUG_LOG === "true",
     MC_SERVER_IP: process.env.MC_SERVER_IP || "",
     MC_SERVER_PORT: parseInt(process.env.MC_SERVER_PORT || "25565"),
+    MC_SERVER_UPTIME_URL: process.env.MC_SERVER_UPTIME_URL || OPTIONAL_STRING,
+    IMGUR_CLIENT_ID: process.env.IMGUR_CLIENT_ID || "",
+    IMGUR_CLIENT_SECRET: process.env.IMGUR_CLIENT_SECRET || "",
   };
 
   for (const key in env) {
@@ -42,8 +53,12 @@ export default function () {
       env[key as keyof typeof env] === null ||
       env[key as keyof typeof env] === ""
     ) {
-      log.error(`Env ${key} does not exist or is empty.`);
+      log.error(chalk.red(`Env ${key} does not exist or is empty.`));
       process.exit(1);
+    }
+    if (env[key as keyof typeof env] === OPTIONAL_STRING) {
+      if (accessedCount > 0) continue;
+      log.warn(chalk.yellow(`Env ${key} is optional and is not set.`));
     }
   }
   const DISCORD_EPOCH = 1420070400000;
@@ -66,5 +81,6 @@ export default function () {
     }
   });
 
+  accessedCount++;
   return env;
 }
