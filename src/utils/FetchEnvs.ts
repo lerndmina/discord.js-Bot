@@ -2,7 +2,6 @@ import { SnowflakeUtil } from "discord.js";
 import * as log from "fancy-log";
 
 import dotenv from "dotenv";
-import chalk from "chalk";
 dotenv.config();
 
 const OPTIONAL_STRING = "optional";
@@ -53,12 +52,12 @@ export default function () {
       env[key as keyof typeof env] === null ||
       env[key as keyof typeof env] === ""
     ) {
-      log.error(chalk.red(`Env ${key} does not exist or is empty.`));
+      log.error(`Env ${key} does not exist or is empty.`);
       process.exit(1);
     }
     if (env[key as keyof typeof env] === OPTIONAL_STRING) {
       if (accessedCount > 0) continue;
-      log.warn(chalk.yellow(`Env ${key} is optional and is not set.`));
+      log.warn(`Env ${key} is optional and is not set.`);
     }
   }
   const DISCORD_EPOCH = 1420070400000;
