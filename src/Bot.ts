@@ -77,12 +77,12 @@ var _commandCooldown = new Map();
 
 export const COOLDOWN_PREFIX = "cooldown";
 
-export function guildCooldownKey(guildId: Snowflake, commandName: string) {
-  return `${COOLDOWN_PREFIX}:${guildId}:${commandName}`;
-}
-
 export function userCooldownKey(userId: Snowflake, commandName: string) {
   return `${COOLDOWN_PREFIX}:${userId}:${commandName}`;
+}
+
+export function guildCooldownKey(guildId: Snowflake, commandName: string) {
+  return `${COOLDOWN_PREFIX}:${guildId}:${commandName}`;
 }
 
 export function globalCooldownKey(commandName: string) {
