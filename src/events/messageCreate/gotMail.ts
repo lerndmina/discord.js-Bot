@@ -30,6 +30,7 @@ import { debugMsg, isVoiceMessage, postWebhookToThread, ThingGetter } from "../.
 import Database from "../../utils/cache/database";
 import { Url } from "url";
 import FetchEnvs from "../../utils/FetchEnvs";
+import { debug } from "console";
 const env = FetchEnvs();
 
 const MAX_TITLE_LENGTH = 50;
@@ -346,7 +347,8 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
     return message.react("🕵️"); // Messages starting with . are staff only
   }
   if (message.cleanContent.length > 1024 || message.content.length <= 0) {
-    message.react("❌");
+    debugMsg(message.content.length <= 0 ? "Message is empty" : "Message is too long");
+    await message.react("❌");
     const botReply = await message.reply({
       embeds: [
         BasicEmbed(
