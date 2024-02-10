@@ -42,6 +42,7 @@ export default async function (message: Message, client: Client<true>) {
   try {
     if (message.guildId) {
       if (message.channel instanceof ThreadChannel) {
+        if (!isVoiceMessage(message)) return;
         await handleReply(message, client, user);
       }
     } else {
