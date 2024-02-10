@@ -4,8 +4,7 @@
 
 This bot was created as a personal project with multiple motivations. Primarily, it was an opportunity to learn and explore the capabilities of Discord.js, a powerful library for interacting with Discord's API. It as a practical, hands-on way to delve deeper into the world of Discord bot development and understand the intricacies involved..
 
-Lastly, the bot integrates with OpenAI's GPT-3 API, which was another exciting aspect to explore. GPT-3, being a state-of-the-art language model, offers a wide range of possibilities, and incorporating it into the bot provided a unique opportunity to experiment with this technology.
-
+Lastly, the bot integrates with OpenAI's Whisper API to provide transcribing of voice messages. This has been a great way to add accessibility to the bot and make it more inclusive for all users.
 ## Dependencies
 This bot relies on two key dependencies: FFmpeg and Redis. 
 
