@@ -329,7 +329,7 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
   const db = new Database();
   const thread = message.channel;
   const messages = await thread.messages.fetch();
-  const lastMessage = messages.last()!; // In this context, we know there is a last message
+  // const lastMessage = messages.last()!; // In this context, we know there is a last message
 
   const mail = await db.findOne(Modmail, { forumThreadId: thread.id });
   if (!mail) {
@@ -337,7 +337,8 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
   }
   const getter = new ThingGetter(client);
   const guild = await getter.getGuild(mail.guildId);
-  if (lastMessage.author.id === client.user.id) {
+  if (true) {
+    //lastMessage.author.id === client.user.id
     if (message.content.startsWith(".")) {
       // TODO move this to an env var
       return message.react("🕵️"); // Messages starting with . are staff only
@@ -384,7 +385,7 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
       ],
     });
 
-    console.log("Sent message to user" + mail.userId + " in guild " + mail.guildId);
+    debugMsg("Sent message to user" + mail.userId + " in guild " + mail.guildId);
 
     return message.react("📨");
   }
