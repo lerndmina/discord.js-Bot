@@ -26,7 +26,7 @@ import Modmail from "../../models/Modmail";
 import ModmailConfig from "../../models/ModmailConfig";
 import ButtonWrapper from "../../utils/ButtonWrapper";
 import { removeMentions, waitingEmoji } from "../../Bot";
-import { isVoiceMessage, postWebhookToThread, ThingGetter } from "../../utils/TinyUtils";
+import { debugMsg, isVoiceMessage, postWebhookToThread, ThingGetter } from "../../utils/TinyUtils";
 import Database from "../../utils/cache/database";
 import { Url } from "url";
 import FetchEnvs from "../../utils/FetchEnvs";
@@ -363,6 +363,15 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
       return;
     }
 
+    debugMsg(
+      "Sending message to user" +
+        mail.userId +
+        " in guild " +
+        mail.guildId +
+        " from " +
+        staffUser.globalName
+    );
+
     (await getter.getUser(mail.userId)).send({
       embeds: [
         BasicEmbed(client, "Modmail Reply", `*`, [
@@ -374,6 +383,9 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
         ]),
       ],
     });
+
+    console.log("Sent message to user" + mail.userId + " in guild " + mail.guildId);
+
     return message.react("📨");
   }
 }
