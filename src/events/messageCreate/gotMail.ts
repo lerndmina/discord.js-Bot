@@ -29,6 +29,9 @@ import { removeMentions, waitingEmoji } from "../../Bot";
 import { isVoiceMessage, postWebhookToThread, ThingGetter } from "../../utils/TinyUtils";
 import Database from "../../utils/cache/database";
 import { Url } from "url";
+import FetchEnvs from "../../utils/FetchEnvs";
+const env = FetchEnvs();
+
 const MAX_TITLE_LENGTH = 50;
 
 export default async function (message: Message, client: Client<true>) {
@@ -49,8 +52,8 @@ export default async function (message: Message, client: Client<true>) {
       embeds: [
         BasicEmbed(
           client,
-          "Modmail",
-          "An unhandled error occured while trying to process your message. Please contact the bot developer. I've logged the error for them.",
+          "Modmail ERROR",
+          `An unhandled error occured while trying to process your message. Please contact the bot developer. I've logged the error for them.\n\nI just prevented the entire bot from crashing. This should never have happened lmao.\nHere's the error: \`\`\`${error}\`\`\``,
           undefined,
           "Red"
         ),
@@ -61,6 +64,19 @@ export default async function (message: Message, client: Client<true>) {
 }
 
 async function handleDM(message: Message, client: Client<true>, user: User) {
+  if (message.content.length > 2000)
+    return message.reply({
+      embeds: [
+        BasicEmbed(
+          client,
+          "Modmail Error",
+          "Your message is too long to send. Please keep your messages under 2000 characters.",
+          undefined,
+          "Red"
+        ),
+      ],
+    });
+
   const db = new Database();
   const requestId = message.id;
   // const mail = await Modmail.findOne({ userId: user.id });
@@ -271,7 +287,7 @@ async function newModmail(customIds: string[], message: Message, user: User, cli
           BasicEmbed(
             client,
             "Modmail",
-            `Successfully created modmail thread in ${guild.name}!\nStaff will reply below. You can send messages here to reply to staff.`,
+            `Successfully created a modmail thread in **${guild.name}**!\n\nWe will get back to you as soon as possible. While you wait, why not grab a hot beverage!\n\nOnce we have solved your issue, you can use \`/close\` to close the thread. If you need to send us more information, just send it here! \n\nCommon answers to questions may be found on our [Wiki](${env.BOT_URL}/wiki) or our [Forums](${env.BOT_URL}/forum)`,
             undefined,
             "Random"
           ),
@@ -320,11 +336,44 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
     return;
   }
   const getter = new ThingGetter(client);
+  const guild = await getter.getGuild(mail.guildId);
   if (lastMessage.author.id === client.user.id) {
     if (message.content.startsWith(".")) {
-      return message.react("🕵️"); // Messages starting with ! are staff only
+      // TODO move this to an env var
+      return message.react("🕵️"); // Messages starting with . are staff only
     }
-    (await getter.getUser(mail.userId)).send({ content: message.cleanContent });
+
+    if (message.cleanContent.length > 1024) {
+      message.react("❌");
+      const botReply = await message.reply({
+        embeds: [
+          BasicEmbed(
+            client,
+            "Modmail Error",
+            `Your message is too long to send. Please keep your messages under 1024 characters.`,
+            undefined,
+            "Red"
+          ),
+        ],
+      });
+      // Wait 5 seconds and then delete the message
+      setTimeout(() => {
+        botReply.delete();
+      }, 5000);
+      return;
+    }
+
+    (await getter.getUser(mail.userId)).send({
+      embeds: [
+        BasicEmbed(client, "Modmail Reply", `*`, [
+          {
+            name: `${getter.getMemberName(await getter.getMember(guild, staffUser.id))} (Staff):`,
+            value: `${message.content}`,
+            inline: false,
+          },
+        ]),
+      ],
+    });
     return message.react("📨");
   }
 }

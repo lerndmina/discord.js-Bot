@@ -13,17 +13,14 @@ import { BOT_MESSAGES, BOT_URL } from "../Bot";
 export default function (
   client: Client<true>,
   title: string,
-  description: string,
+  description?: string,
   fields?: EmbedField[],
   color?: ColorResolvable
 ) {
   if (color == undefined) color = "#de3b79";
 
-  if (description == "*") description = "‎"; // invisible character
-
   var embed = new EmbedBuilder()
     .setTitle(title)
-    .setDescription(description)
     .setColor(color)
     .setAuthor({
       name: client.user.username,
@@ -38,6 +35,8 @@ export default function (
       embed.addFields(field);
     });
   }
+
+  if (description && description !== "*") embed.setDescription(description);
 
   return embed;
 }

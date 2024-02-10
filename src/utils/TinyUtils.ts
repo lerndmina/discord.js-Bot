@@ -15,6 +15,7 @@ import {
   RepliableInteraction,
   MessageFlags,
   Message,
+  GuildMember,
 } from "discord.js";
 import FetchEnvs from "./FetchEnvs";
 import log from "fancy-log";
@@ -90,6 +91,14 @@ export class ThingGetter {
   async getMember(guild: Guild, id: Snowflake) {
     const member = guild.members.cache.get(id);
     return member ? member : await guild.members.fetch(id);
+  }
+
+  getMemberName(guildMember: GuildMember) {
+    return guildMember.nickname || this.getUsername(guildMember.user);
+  }
+
+  getUsername(user: User) {
+    return user.globalName || user.username;
   }
 
   async #get(id: Snowflake, type: "users" | "channels" | "guilds") {

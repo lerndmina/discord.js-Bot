@@ -24,7 +24,6 @@ export default function () {
     DEBUG_LOG: boolean;
     MC_SERVER_IP: string;
     MC_SERVER_PORT: number;
-    MC_SERVER_UPTIME_URL: string;
     IMGUR_CLIENT_ID: string;
     IMGUR_CLIENT_SECRET: string;
   } = {
@@ -41,25 +40,29 @@ export default function () {
     DEBUG_LOG: process.env.DEBUG_LOG === "true",
     MC_SERVER_IP: process.env.MC_SERVER_IP || "",
     MC_SERVER_PORT: parseInt(process.env.MC_SERVER_PORT || "25565"),
-    MC_SERVER_UPTIME_URL: process.env.MC_SERVER_UPTIME_URL || OPTIONAL_STRING,
     IMGUR_CLIENT_ID: process.env.IMGUR_CLIENT_ID || "",
     IMGUR_CLIENT_SECRET: process.env.IMGUR_CLIENT_SECRET || "",
   };
 
+  var missingKeys: string[] = [];
   for (const key in env) {
     if (
       env[key as keyof typeof env] === undefined ||
       env[key as keyof typeof env] === null ||
       env[key as keyof typeof env] === ""
     ) {
-      log.error(`Env ${key} does not exist or is empty.`);
-      process.exit(1);
+      missingKeys.push(key);
     }
     if (env[key as keyof typeof env] === OPTIONAL_STRING) {
       if (accessedCount > 0) continue;
       log.warn(`Env ${key} is optional and is not set.`);
     }
   }
+  if (missingKeys.length > 0) {
+    log.error(`ENV ${missingKeys.join(", ")} are missing and are required.`);
+    process.exit(1);
+  }
+
   const DISCORD_EPOCH = 1420070400000;
   // Check if the owner and server ids are snowflakes
   env.TEST_SERVERS.forEach((id) => {
