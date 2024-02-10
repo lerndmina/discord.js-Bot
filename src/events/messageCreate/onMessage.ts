@@ -1,4 +1,12 @@
-import { MessageType, MessageFlags, ActivityType, Message, Client, ChannelType } from "discord.js";
+import {
+  MessageType,
+  MessageFlags,
+  ActivityType,
+  Message,
+  Client,
+  ChannelType,
+  ThreadChannel,
+} from "discord.js";
 import log from "fancy-log";
 import syncCommands from "../../utils/unregister-commands";
 import BasicEmbed from "../../utils/BasicEmbed";
@@ -21,7 +29,7 @@ export default async function (message: Message, client: Client<true>) {
   // We don't return true here because we want to continue to the next event
 
   // Send reactions for transcriptions
-  if (isVoiceMessage(message)) {
+  if (isVoiceMessage(message) && message.channel! instanceof ThreadChannel) {
     if (message.reactions.cache.size > 0) return;
     message.react("✍️").then(() => message.react("❌"));
     return true; // Stop the event loop we've delt with this message

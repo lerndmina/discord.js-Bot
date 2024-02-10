@@ -10,6 +10,7 @@ import {
   ChannelType,
   MessageReaction,
   User,
+  ThreadChannel,
 } from "discord.js";
 import log from "fancy-log";
 import TranscribeMessage from "../../utils/TranscribeMessage";
@@ -22,6 +23,7 @@ const env = FetchEnvs();
 
 var alreadyProcessed = false;
 export default async function (reaction: MessageReaction, user: User, client: Client<true>) {
+  if (reaction.message.channel instanceof ThreadChannel) return; // Ignore threads
   if (reaction.partial) await reaction.fetch(); // Fetch the reaction
   const message = await reaction.message.fetch(); // Fetch the messag
 
