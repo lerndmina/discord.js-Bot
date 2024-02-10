@@ -66,13 +66,13 @@ export default async function (message: Message, client: Client<true>) {
 }
 
 async function handleDM(message: Message, client: Client<true>, user: User) {
-  if (message.content.length > 2000)
+  if (message.content.length > 2000 || message.content.length <= 0)
     return message.reply({
       embeds: [
         BasicEmbed(
           client,
           "Modmail Error",
-          "Your message is too long to send. Please keep your messages under 2000 characters.",
+          "Your message is too long to send. Please keep your messages under 2000 characters.\n\nThis error can also occur if you send an empty message. Please send a message with content.",
           undefined,
           "Red"
         ),
@@ -345,14 +345,14 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
     // TODO move this to an env var
     return message.react("🕵️"); // Messages starting with . are staff only
   }
-  if (message.cleanContent.length > 1024) {
+  if (message.cleanContent.length > 1024 || message.content.length <= 0) {
     message.react("❌");
     const botReply = await message.reply({
       embeds: [
         BasicEmbed(
           client,
           "Modmail Error",
-          `Your message is too long to send. Please keep your messages under 1024 characters.`,
+          `Your message is either too long or short to send. Please keep your messages above 1 under 1024 characters.`,
           undefined,
           "Red"
         ),
