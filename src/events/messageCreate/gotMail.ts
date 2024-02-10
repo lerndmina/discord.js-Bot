@@ -329,7 +329,9 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
   const db = new Database();
   const thread = message.channel;
   const messages = await thread.messages.fetch();
-  // const lastMessage = messages.last()!; // In this context, we know there is a last message
+
+  // const lastMessage = messages.last()!; // Check that the bot is the one who opened the thread.
+  // if (lastMessage.author.id !== client.user.id) return;
 
   const mail = await db.findOne(Modmail, { forumThreadId: thread.id });
   if (!mail) {
@@ -337,56 +339,52 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
   }
   const getter = new ThingGetter(client);
   const guild = await getter.getGuild(mail.guildId);
-  if (true) {
-    //lastMessage.author.id === client.user.id
-    if (message.content.startsWith(".")) {
-      // TODO move this to an env var
-      return message.react("🕵️"); // Messages starting with . are staff only
-    }
-
-    if (message.cleanContent.length > 1024) {
-      message.react("❌");
-      const botReply = await message.reply({
-        embeds: [
-          BasicEmbed(
-            client,
-            "Modmail Error",
-            `Your message is too long to send. Please keep your messages under 1024 characters.`,
-            undefined,
-            "Red"
-          ),
-        ],
-      });
-      // Wait 5 seconds and then delete the message
-      setTimeout(() => {
-        botReply.delete();
-      }, 5000);
-      return;
-    }
-
-    debugMsg(
-      "Sending message to user" +
-        mail.userId +
-        " in guild " +
-        mail.guildId +
-        " from " +
-        staffUser.globalName
-    );
-
-    (await getter.getUser(mail.userId)).send({
+  if (message.content.startsWith(".")) {
+    // TODO move this to an env var
+    return message.react("🕵️"); // Messages starting with . are staff only
+  }
+  if (message.cleanContent.length > 1024) {
+    message.react("❌");
+    const botReply = await message.reply({
       embeds: [
-        BasicEmbed(client, "Modmail Reply", `*`, [
-          {
-            name: `${getter.getMemberName(await getter.getMember(guild, staffUser.id))} (Staff):`,
-            value: `${message.content}`,
-            inline: false,
-          },
-        ]),
+        BasicEmbed(
+          client,
+          "Modmail Error",
+          `Your message is too long to send. Please keep your messages under 1024 characters.`,
+          undefined,
+          "Red"
+        ),
       ],
     });
-
-    debugMsg("Sent message to user" + mail.userId + " in guild " + mail.guildId);
-
-    return message.react("📨");
+    // Wait 5 seconds and then delete the message
+    setTimeout(() => {
+      botReply.delete();
+    }, 5000);
+    return;
   }
+
+  debugMsg(
+    "Sending message to user" +
+      mail.userId +
+      " in guild " +
+      mail.guildId +
+      " from " +
+      staffUser.globalName
+  );
+
+  (await getter.getUser(mail.userId)).send({
+    embeds: [
+      BasicEmbed(client, "Modmail Reply", `*`, [
+        {
+          name: `${getter.getMemberName(await getter.getMember(guild, staffUser.id))} (Staff):`,
+          value: `${message.content}`,
+          inline: false,
+        },
+      ]),
+    ],
+  });
+
+  debugMsg("Sent message to user" + mail.userId + " in guild " + mail.guildId);
+
+  return message.react("📨");
 }
