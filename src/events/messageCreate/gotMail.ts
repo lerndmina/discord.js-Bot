@@ -363,7 +363,7 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
     // Wait 5 seconds and then delete the message
     setTimeout(() => {
       botReply.delete();
-    }, 5000);
+    }, 15000);
     return;
   }
 
