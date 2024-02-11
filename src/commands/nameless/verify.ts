@@ -1,7 +1,6 @@
 import type { CommandData, SlashCommandProps, CommandOptions } from "commandkit";
 import {
   SlashCommandBuilder,
-  EmbedBuilder,
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
@@ -9,7 +8,7 @@ import {
   ModalSubmitInteraction,
 } from "discord.js";
 import log from "fancy-log";
-import { BOT_URL, globalCooldownKey, setCommandCooldown, waitingEmoji } from "../../Bot";
+import { setCommandCooldown, userCooldownKey, waitingEmoji } from "../../Bot";
 import { verifyUser } from "../../utils/nameless-api/api";
 import BasicEmbed from "../../utils/BasicEmbed";
 import FetchEnvs from "../../utils/FetchEnvs";
@@ -26,8 +25,6 @@ export const options: CommandOptions = {
 };
 
 export async function run({ interaction, client, handler }: SlashCommandProps) {
-  setCommandCooldown(globalCooldownKey(interaction.commandName), 60);
-
   const modalId = `modal-${interaction.id}`;
   const inputId = `input-${interaction.id}`;
 
@@ -85,6 +82,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
           });
       }
 
+      setCommandCooldown(userCooldownKey(interaction.user.id, interaction.commandName), 300);
       return i.editReply({
         content: "",
         embeds: [
