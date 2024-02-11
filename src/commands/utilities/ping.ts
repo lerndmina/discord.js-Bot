@@ -23,7 +23,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
 
   const timestamp = interaction.createdTimestamp;
   const currentTime = Date.now();
-  const latency = currentTime - timestamp;
+  const latency = timestamp - currentTime;
   var latencyString = "";
   if (latency < 0) {
     latencyString = `${latency}ms (This is probably wrong)\n\nAt least you know the bot is alive lmao!`;

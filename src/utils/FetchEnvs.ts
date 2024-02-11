@@ -24,6 +24,7 @@ export default function () {
     DEBUG_LOG: boolean;
     MC_SERVER_IP: string;
     MC_SERVER_PORT: number;
+    NAMELESS_API_KEY: string;
     IMGUR_CLIENT_ID: string;
     IMGUR_CLIENT_SECRET: string;
   } = {
@@ -40,6 +41,7 @@ export default function () {
     DEBUG_LOG: process.env.DEBUG_LOG === "true",
     MC_SERVER_IP: process.env.MC_SERVER_IP || "",
     MC_SERVER_PORT: parseInt(process.env.MC_SERVER_PORT || "25565"),
+    NAMELESS_API_KEY: process.env.NAMELESS_API_KEY || "",
     IMGUR_CLIENT_ID: process.env.IMGUR_CLIENT_ID || "",
     IMGUR_CLIENT_SECRET: process.env.IMGUR_CLIENT_SECRET || "",
   };
