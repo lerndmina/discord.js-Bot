@@ -23,7 +23,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
 
   const timestamp = interaction.createdTimestamp;
   const currentTime = Date.now();
-  const latency = timestamp - currentTime;
+  const latency = currentTime - timestamp;
   var latencyString = "";
   if (latency < 0) {
     latencyString = `${latency}ms (This is probably wrong)\n\nAt least you know the bot is alive lmao!`;
@@ -39,7 +39,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
       .setTitle("🏓 Pong!")
       .addFields({
         name: `Websocket`,
-        value: `This ping is probably invalid. Trying again... ${waitingEmoji}`,
+        value: `The bot just started. Waiting 1m for websocket ping to be cached. ${waitingEmoji}`,
       })
       .addFields({
         name: `Message Latency`,
@@ -48,7 +48,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
       .setColor("#0099ff");
     await interaction.reply({ embeds: [preEmbed], ephemeral: isPrivate });
 
-    await new Promise((r) => setTimeout(r, 30000));
+    await new Promise((r) => setTimeout(r, 60000));
     wsPing = interaction.client.ws.ping;
     deferred = true;
   }
