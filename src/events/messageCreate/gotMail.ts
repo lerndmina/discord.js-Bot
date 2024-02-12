@@ -26,7 +26,13 @@ import Modmail from "../../models/Modmail";
 import ModmailConfig from "../../models/ModmailConfig";
 import ButtonWrapper from "../../utils/ButtonWrapper";
 import { removeMentions, waitingEmoji } from "../../Bot";
-import { debugMsg, isVoiceMessage, postWebhookToThread, ThingGetter } from "../../utils/TinyUtils";
+import {
+  debugMsg,
+  isVoiceMessage,
+  postWebhookToThread,
+  prepModmailMessage,
+  ThingGetter,
+} from "../../utils/TinyUtils";
 import Database from "../../utils/cache/database";
 import { Url } from "url";
 import FetchEnvs from "../../utils/FetchEnvs";
@@ -67,18 +73,8 @@ export default async function (message: Message, client: Client<true>) {
 }
 
 async function handleDM(message: Message, client: Client<true>, user: User) {
-  if (message.content.length > 2000 || message.content.length <= 0)
-    return message.reply({
-      embeds: [
-        BasicEmbed(
-          client,
-          "Modmail Error",
-          "Your message is too long to send. Please keep your messages under 2000 characters.\n\nThis error can also occur if you send an empty message. Please send a message with content.",
-          undefined,
-          "Red"
-        ),
-      ],
-    });
+  const finalContent = await prepModmailMessage(client, message, 2000);
+  if (!finalContent) return;
 
   const db = new Database();
   const requestId = message.id;
@@ -86,13 +82,19 @@ async function handleDM(message: Message, client: Client<true>, user: User) {
   const mail = await db.findOne(Modmail, { userId: user.id });
   const customIds = [`create-${requestId}`, `cancel-${requestId}`];
   if (!mail) {
-    await newModmail(customIds, message, user, client);
+    await newModmail(customIds, message, finalContent, user, client);
   } else {
-    await sendMessage(mail, message, client);
+    await sendMessage(mail, message, finalContent, client);
   }
 }
 
-async function newModmail(customIds: string[], message: Message, user: User, client: Client<true>) {
+async function newModmail(
+  customIds: string[],
+  message: Message,
+  messageContent: string,
+  user: User,
+  client: Client<true>
+) {
   const buttons = [
     new ButtonBuilder()
       .setCustomId(customIds[0])
@@ -306,8 +308,13 @@ async function newModmail(customIds: string[], message: Message, user: User, cli
  * @param {Message} message
  * @param {Client} client
  */
-async function sendMessage(mail: any, message: Message, client: Client<true>) {
-  const cleanMessageContent = removeMentions(message.content);
+async function sendMessage(
+  mail: any,
+  message: Message,
+  messageContent: string,
+  client: Client<true>
+) {
+  const cleanMessageContent = removeMentions(messageContent);
   const getter = new ThingGetter(client);
   try {
     const guild = await getter.getGuild(mail.guildId);
@@ -335,6 +342,7 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
 
   // const lastMessage = messages.last()!; // Check that the bot is the one who opened the thread.
   // if (lastMessage.author.id !== client.user.id) return;
+  // ^ This caused ratelimiting when checking if the bot owned the channel
 
   const mail = await db.findOne(Modmail, { forumThreadId: thread.id });
   if (!mail) {
@@ -346,29 +354,11 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
     // TODO move this to an env var
     return message.react("🕵️"); // Messages starting with . are staff only
   }
-  if (message.cleanContent.length > 1024 || message.content.length <= 0) {
-    debugMsg(message.content.length <= 0 ? "Message is empty" : "Message is too long");
-    await message.react("❌");
-    const botReply = await message.reply({
-      embeds: [
-        BasicEmbed(
-          client,
-          "Modmail Error",
-          `Your message is either too long or short to send. Please keep your messages above 1 under 1024 characters.`,
-          undefined,
-          "Red"
-        ),
-      ],
-    });
-    // Wait 5 seconds and then delete the message
-    setTimeout(() => {
-      botReply.delete();
-    }, 15000);
-    return;
-  }
+  const finalContent = removeMentions((await prepModmailMessage(client, message, 1024)) || "");
+  if (!finalContent) return;
 
   debugMsg(
-    "Sending message to user" +
+    "Sending message to user " +
       mail.userId +
       " in guild " +
       mail.guildId +
@@ -381,7 +371,7 @@ async function handleReply(message: Message, client: Client<true>, staffUser: Us
       BasicEmbed(client, "Modmail Reply", `*`, [
         {
           name: `${getter.getMemberName(await getter.getMember(guild, staffUser.id))} (Staff):`,
-          value: `${message.content}`,
+          value: `${finalContent}`,
           inline: false,
         },
       ]),

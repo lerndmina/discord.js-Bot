@@ -214,3 +214,62 @@ export function flattenStringArray(array: string[] | string) {
   }
   return array.join("\n");
 }
+
+export async function prepModmailMessage(
+  client: Client<true>,
+  message: Message,
+  characterLimit: number
+) {
+  var content = message.content;
+  var attachments = message.attachments.map((attachment) => {
+    return attachment.url;
+  });
+  var allContent = [content, attachments.length > 0 ? "\nAttachments:" : "", ...attachments].join(
+    "\n"
+  );
+
+  if (!allContent && message.stickers.size !== 0) {
+    await message.react("❌");
+    const botmessage = await message.reply({
+      content: "",
+      embeds: [
+        BasicEmbed(
+          client,
+          "Modmail Error",
+          "Tried to send an empty message.\n\nStickers are not supported in modmail at this time. Sending a message with a sticker will strip the sticker and send the message without it."
+        ),
+      ],
+    });
+    deleteMessage(botmessage, 15000);
+  }
+
+  if (allContent.length > characterLimit) {
+    await message.react("❌");
+    const botmessage = await message.reply({
+      content: "",
+      embeds: [
+        BasicEmbed(
+          client,
+          "Modmail Error",
+          `Your message is too long to send. Please keep your messages under ${characterLimit} characters.\n\nThis error can also occur if you somehow managed to send a message with no content.`
+        ),
+      ],
+    });
+    deleteMessage(botmessage, 15000);
+    return null;
+  }
+  return allContent;
+}
+
+export async function deleteMessage(message: Message, timeout = 0) {
+  try {
+    if (!timeout) return message.delete();
+    await sleep(timeout);
+    return message.delete();
+  } catch (error) {
+    log.error(
+      `Failed to delete message: ${message.id} in ${message.channel.id} it may have already been deleted.`
+    );
+    log.error(error);
+  }
+}
