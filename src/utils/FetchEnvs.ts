@@ -27,6 +27,7 @@ export default function () {
     NAMELESS_API_KEY: string;
     IMGUR_CLIENT_ID: string;
     IMGUR_CLIENT_SECRET: string;
+    MODMAIL_TABLE: string;
   } = {
     BOT_TOKEN: process.env.BOT_TOKEN || "",
     OWNER_IDS: (process.env.OWNER_IDS || "").split(","),
@@ -44,6 +45,7 @@ export default function () {
     NAMELESS_API_KEY: process.env.NAMELESS_API_KEY || "",
     IMGUR_CLIENT_ID: process.env.IMGUR_CLIENT_ID || "",
     IMGUR_CLIENT_SECRET: process.env.IMGUR_CLIENT_SECRET || "",
+    MODMAIL_TABLE: process.env.MODMAIL_TABLE || "",
   };
 
   var missingKeys: string[] = [];
