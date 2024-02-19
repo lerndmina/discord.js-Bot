@@ -1,7 +1,10 @@
 import { Schema, model } from "mongoose";
 
+import FetchEnvs from "../utils/FetchEnvs";
+
+const env = FetchEnvs();
 export default model(
-  "Modmail",
+  env.MODMAIL_TABLE,
   new Schema({
     guildId: {
       type: String,
