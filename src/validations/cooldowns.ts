@@ -16,14 +16,8 @@ const env = FetchEnvs();
 
 export default async function ({ interaction, commandObj, handler }: ValidationProps) {
   if (!interaction.isRepliable()) return;
-  if (env.OWNER_IDS.includes(interaction.user.id)) {
-    const key = `bypasscooldowns:${interaction.user.id}`;
-    const res = await redisClient.get(key);
-    if (res === "true") {
-      debugMsg(`Bypassing cooldown for ${interaction.user.id}... Key = ${key} - Value = ${res}`);
-      return false;
-    }
-  }
+  if ((await hasCooldownBypass(interaction)) === true) return false;
+
   const name = commandObj.data.name;
 
   const globalCooldown = await getCooldown(globalCooldownKey(name));
@@ -44,14 +38,14 @@ export default async function ({ interaction, commandObj, handler }: ValidationP
 /**
  * @returns Timestamp in seconds when the cooldown will be over.
  */
-async function getCooldown(key: string) {
+export async function getCooldown(key: string) {
   const cooldownData = await redisClient.get(key);
   if (cooldownData == null) return 0;
   const cooldown = Number.parseInt(cooldownData);
   return Math.floor(cooldown / 1000);
 }
 
-async function cooldownMessage(
+export async function cooldownMessage(
   interaction: RepliableInteraction,
   commandName: string,
   cooldownLeft: number,
@@ -69,4 +63,16 @@ async function cooldownMessage(
   interaction.reply({ embeds: [embed], ephemeral: true });
 
   return true;
+}
+
+export async function hasCooldownBypass(interaction: RepliableInteraction) {
+  if (env.OWNER_IDS.includes(interaction.user.id)) {
+    const key = `bypasscooldowns:${interaction.user.id}`;
+    const res = await redisClient.get(key);
+    if (res === "true") {
+      debugMsg(`Bypassing cooldown for ${interaction.user.id}... Key = ${key} - Value = ${res}`);
+      return true;
+    }
+  }
+  return false;
 }
