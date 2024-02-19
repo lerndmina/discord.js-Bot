@@ -7,6 +7,7 @@ import DontAtMeRole from "../../models/DontAtMeRole";
 import BasicEmbed from "../../utils/BasicEmbed";
 
 import fetchEnvs from "../../utils/FetchEnvs";
+import { redisClient } from "../../Bot";
 const env = fetchEnvs();
 
 /**
@@ -24,7 +25,11 @@ export default async (message: Message, client: Client<true>) => {
   const db = new Database();
   const guildId = message.guild!.id; // This is safe because we check for DMs above
   const fetchedRole = await db.findOne(DontAtMeRole, { guildId: guildId }, true);
-  if (!fetchedRole) return;
+  // If the role is not found, we can safely assume that the feature is not enabled so we cache this for faster response times
+  if (!fetchedRole) {
+    redisClient.set("DontAtMeRole:guildId:" + guildId, "false");
+    return false;
+  }
 
   const roleId = fetchedRole.roleId;
   const getter = new ThingGetter(client);
