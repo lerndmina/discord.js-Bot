@@ -68,7 +68,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
     });
   }
 
-  var fields = []; // {name: category, value: "command1: description\ncommand2: description"}
+  var fields: EmbedField[] = []; // {name: category, value: "command1: description\ncommand2: description"}
 
   // Clean up and make it pesentable
   for (const category in commands) {
@@ -98,6 +98,8 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
         }
       }
 
+      if (!value || !name) continue;
+
       fields.push({
         name: name,
         value: value,
@@ -106,7 +108,13 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
     }
   }
 
-  const embed = BasicEmbed(client, "Help", "To run commands, use `/(command-Name)`\n", fields);
+  const embed = BasicEmbed(
+    client,
+    "Help",
+    "To run commands, use `/(command-Name)`\n",
+    fields,
+    undefined
+  );
 
   interaction.editReply({
     embeds: [embed],
