@@ -31,7 +31,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
 
   debugMsg("Building command map");
   for (const command of localCommands) {
-    debugMsg(command);
+    debugMsg(command); // Logs the command object
     var commandCategory = command.category;
     const commandName = command.name;
 

@@ -25,7 +25,7 @@ const BANNED_GUILDS = ["856937743543304203"];
  */
 export default async function (message: Message, client: Client<true>) {
   if (message.author.bot) return;
-  if (message.channel.type == ChannelType.DM) return;
+  // if (message.channel.type == ChannelType.DM) return;
   // We don't return true here because we want to continue to the next event
 
   // Send reactions for transcriptions
