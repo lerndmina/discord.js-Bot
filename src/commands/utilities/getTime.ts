@@ -17,7 +17,7 @@ export const data = new SlashCommandBuilder()
   );
 
 export const options: CommandOptions = {
-  devOnly: true,
+  devOnly: false,
   deleted: false,
 };
 
