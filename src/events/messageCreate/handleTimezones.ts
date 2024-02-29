@@ -8,6 +8,7 @@ import ButtonWrapper from "../../utils/ButtonWrapper";
 export default async function (message: Message, client: Client<true>) {
   if (message.author.bot) return;
   if (message.channel.type == ChannelType.DM) return;
+  return;
 
   log.info("Processing message for time. . .");
 
@@ -28,10 +29,14 @@ export default async function (message: Message, client: Client<true>) {
 
   const buttons = ButtonWrapper([
     new ButtonBuilder()
-      .setCustomId("deleteMe")
+      .setCustomId("deleteMe-" + message.author.id)
       .setLabel("Delete Me")
       .setStyle(ButtonStyle.Danger)
       .setEmoji("🗑️"),
+    new ButtonBuilder()
+      .setURL("https://hammertime.cyou/en-GB?t=" + data.seconds)
+      .setLabel("Edit this timestamp")
+      .setStyle(ButtonStyle.Link),
   ]);
 
   const content = `Converted to timestamp: ⏰ <t:${data.seconds}:F>\n\nUse this in your own message: \`\`\`<t:${data.seconds}:F>\`\`\``;
