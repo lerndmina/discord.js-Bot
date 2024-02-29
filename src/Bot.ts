@@ -37,14 +37,10 @@ export const Start = async () => {
 
   log.info(`Logging in to Discord with ${Object.keys(env).length} enviroment variables.`);
 
-  await mongoose
-    .connect(
-      "mongodb+srv://lerndmina-dev-user:thcuZcQh4puuGHYp3rBvMVBPjMTdFyMngcmMkjv9xGvuQnahqKbBxbWgpFpgsQnZ@bot.4st7bvw.mongodb.net/%3FretryWrites%3Dtrue%26w%3Dmajority"
-    )
-    .then(() => {
-      log.info("Connected to MongoDB");
-      client.login(env.BOT_TOKEN);
-    });
+  await mongoose.connect(env.MONGODB_URI).then(() => {
+    log.info("Connected to MongoDB");
+    client.login(env.BOT_TOKEN);
+  });
 
   await redisClient.connect();
 };
