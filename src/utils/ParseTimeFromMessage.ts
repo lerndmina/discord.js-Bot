@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import * as chrono from "chrono-node";
 import moment from "moment-timezone";
+import { parse } from "path";
 
 export default function (message: Message | string):
   | {
@@ -17,7 +18,9 @@ export default function (message: Message | string):
     } {
   if (typeof message !== "string") message = message.content;
 
-  let parsed = chrono.parse(message)[0];
+  let parsed = chrono.uk.parse(message)[0];
+
+  console.log(parsed);
 
   if (!parsed)
     return {

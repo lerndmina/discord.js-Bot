@@ -2,7 +2,7 @@ import { Client, InteractionType, MessageComponentInteraction } from "discord.js
 import { waitingEmoji } from "../../Bot";
 
 export default async (interaction: MessageComponentInteraction, client: Client<true>) => {
-  if (interaction.customId !== "deleteMe") return;
+  if (!interaction.customId.startsWith("deleteMe-")) return;
   if (interaction.type !== InteractionType.MessageComponent) return;
   if (!interaction.isButton()) return;
   if (!interaction.guild) return;
