@@ -98,6 +98,13 @@ export class ThingGetter {
     return role ? role : await guild.roles.fetch(id);
   }
 
+  async getMessage(channel: Channel, id: Snowflake) {
+    const message = (channel as any).messages.cache.get(id);
+    if (!message) {
+      return await (channel as any).messages.fetch(id);
+    }
+  }
+
   getMemberName(guildMember: GuildMember) {
     return guildMember.nickname || this.getUsername(guildMember.user);
   }
