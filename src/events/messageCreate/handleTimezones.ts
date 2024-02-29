@@ -1,8 +1,9 @@
-import { ChannelType, Client, Message } from "discord.js";
+import { ButtonBuilder, ButtonStyle, ChannelType, Client, Message } from "discord.js";
 import log from "fancy-log";
 import ParseTimeFromMessage from "../../utils/ParseTimeFromMessage";
 import BasicEmbed from "../../utils/BasicEmbed";
 import { sleep } from "../../utils/TinyUtils";
+import ButtonWrapper from "../../utils/ButtonWrapper";
 
 export default async function (message: Message, client: Client<true>) {
   if (message.author.bot) return;
@@ -25,9 +26,17 @@ export default async function (message: Message, client: Client<true>) {
   //   `This looks like a time! I've parsed it as: <t:${data.seconds}:F> \nIf you want to send timestamps yourself, you can!\n Just use \`/getTime\` and I'll return you a discord timestamp from your message. \n\nI'll remove the embed in 60s and leave the timestamp.\n\nHere's some more details about this, in case something is wrong. . .\n\`\`\`json\n${JSON.stringify(data, null ,2)}\`\`\``
   // );
 
+  const buttons = ButtonWrapper([
+    new ButtonBuilder()
+      .setCustomId("deleteMe")
+      .setLabel("Delete Me")
+      .setStyle(ButtonStyle.Danger)
+      .setEmoji("🗑️"),
+  ]);
+
   const content = `Converted to timestamp: ⏰ <t:${data.seconds}:F>\n\nUse this in your own message: \`\`\`<t:${data.seconds}:F>\`\`\``;
 
-  const reply = await message.reply({ content });
+  await message.reply({ content, components: buttons });
 
   // sleep(60 * 1000).then(() => {
   //   try {

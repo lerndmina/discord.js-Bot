@@ -1,4 +1,10 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonComponentData } from "discord.js";
+import {
+  ActionRowBuilder,
+  AnyComponentBuilder,
+  ButtonBuilder,
+  ButtonComponent,
+  ButtonComponentData,
+} from "discord.js";
 
 export default function (buttons: ButtonBuilder[]) {
   const components = [];
