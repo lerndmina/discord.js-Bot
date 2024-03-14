@@ -14,12 +14,26 @@ export default async function (message: Message, client: Client<true>) {
     message.mentions.has(client.user.id)
   )
     handleReplyTrigger(message, client);
-  if (!(message.content.includes(":") && message.content.includes("/"))) return;
+  const mustContain = [":", ["/", "-"]];
+  for (const stringOrArr of mustContain) {
+    if (typeof stringOrArr === "string") {
+      if (!message.content.includes(stringOrArr)) return;
+    } else {
+      let found = false;
+      for (const element of stringOrArr) {
+        if (message.content.includes(element)) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) return;
+    }
+  }
   if (message.content.includes("http")) return;
 
   log.info("Processing message for time. . .");
 
-  const data = ParseTimeFromMessage(message);
+  const data = await ParseTimeFromMessage(message);
 
   if (!data.success) {
     return false;
@@ -71,7 +85,7 @@ async function handleReplyTrigger(reply: Message, client: Client<true>) {
 
   console.log("Original message: ", originalMessage.content);
 
-  const data = ParseTimeFromMessage(originalMessage);
+  const data = await ParseTimeFromMessage(originalMessage);
 
   if (!data.success) {
     return false;

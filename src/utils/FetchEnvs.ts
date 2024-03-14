@@ -28,6 +28,7 @@ export default function () {
     IMGUR_CLIENT_ID: string;
     IMGUR_CLIENT_SECRET: string;
     MODMAIL_TABLE: string;
+    DEFAULT_TIMEZONE: string;
   } = {
     BOT_TOKEN: process.env.BOT_TOKEN || "",
     OWNER_IDS: (process.env.OWNER_IDS || "").split(","),
@@ -46,6 +47,7 @@ export default function () {
     IMGUR_CLIENT_ID: process.env.IMGUR_CLIENT_ID || "",
     IMGUR_CLIENT_SECRET: process.env.IMGUR_CLIENT_SECRET || "",
     MODMAIL_TABLE: process.env.MODMAIL_TABLE || "",
+    DEFAULT_TIMEZONE: process.env.DEFAULT_TIMEZONE || "Europe/London",
   };
 
   var missingKeys: string[] = [];
