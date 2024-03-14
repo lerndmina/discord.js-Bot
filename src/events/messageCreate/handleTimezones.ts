@@ -5,6 +5,14 @@ import BasicEmbed from "../../utils/BasicEmbed";
 import { ThingGetter, sleep } from "../../utils/TinyUtils";
 import ButtonWrapper from "../../utils/ButtonWrapper";
 
+const DATE_REGEXES = [
+  /(\d{4}[\/-]\d\d[\/-]\d\d \d\d:\d\d(?::\d\d)?)/gm, // 2021-10-10 10:10
+  /(\d{4}[\/-]\d\d[\/-]\d\d)/gm, // 2021-10-10
+  /(\d\d:\d\d(?::\d\d)?)/gm, // 10:10
+  /(\d\d[\/-]\d\d[\/-]\d{4} \d\d:\d\d(?::\d\d)?)/gm, // 10/10/2021 10:10
+  /(\d\d[\/-]\d\d[\/-]\d{4})/gm // 10/10/2021
+];
+
 export default async function (message: Message, client: Client<true>) {
   if (message.author.bot) return;
   if (message.channel.type != ChannelType.GuildText) return;
@@ -14,20 +22,9 @@ export default async function (message: Message, client: Client<true>) {
     message.mentions.has(client.user.id)
   )
     handleReplyTrigger(message, client);
-  const mustContain = [":", ["/", "-"]];
-  for (const stringOrArr of mustContain) {
-    if (typeof stringOrArr === "string") {
-      if (!message.content.includes(stringOrArr)) return;
-    } else {
-      let found = false;
-      for (const element of stringOrArr) {
-        if (message.content.includes(element)) {
-          found = true;
-          break;
-        }
-      }
-      if (!found) return;
-    }
+  if(DATE_REGEXES.filter(x => x.test(message.content)).length == 0) {
+    console.log("No date found in message");
+    return;
   }
   if (message.content.includes("http")) return;
 
