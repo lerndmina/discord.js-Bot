@@ -5,6 +5,14 @@ import BasicEmbed from "../../utils/BasicEmbed";
 import { ThingGetter, sleep } from "../../utils/TinyUtils";
 import ButtonWrapper from "../../utils/ButtonWrapper";
 
+const DATE_REGEXES = [
+  /(\d{4}[\/-]\d\d[\/-]\d\d \d\d:\d\d(?::\d\d)?)/gm, // 2021-10-10 10:10
+  /(\d{4}[\/-]\d\d[\/-]\d\d)/gm, // 2021-10-10
+  /(\d\d:\d\d(?::\d\d)?)/gm, // 10:10
+  /(\d\d[\/-]\d\d[\/-]\d{4} \d\d:\d\d(?::\d\d)?)/gm, // 10/10/2021 10:10
+  /(\d\d[\/-]\d\d[\/-]\d{4})/gm // 10/10/2021
+];
+
 export default async function (message: Message, client: Client<true>) {
   if (message.author.bot) return;
   if (message.channel.type != ChannelType.GuildText) return;
@@ -14,12 +22,15 @@ export default async function (message: Message, client: Client<true>) {
     message.mentions.has(client.user.id)
   )
     handleReplyTrigger(message, client);
-  if (!(message.content.includes(":") && message.content.includes("/"))) return;
+  if(DATE_REGEXES.filter(x => x.test(message.content)).length == 0) {
+    console.log("No date found in message");
+    return;
+  }
   if (message.content.includes("http")) return;
 
   log.info("Processing message for time. . .");
 
-  const data = ParseTimeFromMessage(message);
+  const data = await ParseTimeFromMessage(message);
 
   if (!data.success) {
     return false;
@@ -71,7 +82,7 @@ async function handleReplyTrigger(reply: Message, client: Client<true>) {
 
   console.log("Original message: ", originalMessage.content);
 
-  const data = ParseTimeFromMessage(originalMessage);
+  const data = await ParseTimeFromMessage(originalMessage);
 
   if (!data.success) {
     return false;

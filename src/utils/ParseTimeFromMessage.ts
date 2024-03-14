@@ -1,9 +1,14 @@
 import { Message } from "discord.js";
 import * as chrono from "chrono-node";
 import moment from "moment-timezone";
-import { parse } from "path";
+import UserTimezone from "../models/UserTimezone";
+import FetchEnvs from "./FetchEnvs";
+import Database from "./data/database";
+const env = FetchEnvs();
 
-export default function (message: Message | string):
+export default async function (
+  message: Message | string | { content: string; author: { id: string } }
+): Promise<
   | {
       success: true;
       message: string;
@@ -15,13 +20,19 @@ export default function (message: Message | string):
       message: string;
       date: null;
       seconds: null;
-    } {
-  if (typeof message !== "string") message = message.content;
+    }
+> {
+  const content = typeof message === "string" ? message : message.content;
+  const author = typeof message === "string" ? { id: undefined } : message.author;
 
-  let parsed = chrono.uk.parse(message)[0];
+  // Try to parse the date from the message
+  let parsed = chrono.uk.parse(content, {
+    timezone: 0, // Parse all dates in UTC, we'll apply the timezone offset later
+  })[0];
 
   console.log(parsed);
 
+  // If we couldn't parse a date, return an error
   if (!parsed)
     return {
       success: false,
@@ -30,16 +41,45 @@ export default function (message: Message | string):
       seconds: null,
     };
 
-  const CETOffset = moment.tz("Europe/Paris").utcOffset();
+  // Get the default timezone from the environment
+  let tz = env.DEFAULT_TIMEZONE;
 
-  let date = moment.utc(parsed.start.date());
+  // If we have an author, check if they have a timezone set
+  const authorId = author.id;
+  if (authorId) {
+    const db = new Database();
 
-  // @ts-ignore
-  if (parsed.start.knownValues.timezoneOffset === undefined) {
-    console.log("No timezone offset found, assuming CET");
-    date = date.add(CETOffset, "minutes");
+    try {
+      const response = await db.findOne(UserTimezone, { userId: authorId });
+
+      if (!response) {
+        console.log("No timezone found, assuming ", tz);
+      } else {
+        tz = response.timezone;
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
+  // Apply the timezone offset to the date
+  const tzOffset = moment.tz(tz).utcOffset();
+
+  // Convert the parsed date to a moment object
+  let date = moment.utc(parsed.start.date());
+  // @ts-ignore
+  if (parsed.start.knownValues.timezoneOffset === undefined) {
+    console.log(
+      "No timezone offset found in the message, subtracting",
+      tzOffset,
+      "minutes to account for the timezone. . . (",
+      tz,
+      ")"
+    );
+    date = date.add(-tzOffset, "minutes");
+  }
+
+  // Return the parsed date with the seconds since epoch
   return {
     success: true,
     message: parsed.text,
