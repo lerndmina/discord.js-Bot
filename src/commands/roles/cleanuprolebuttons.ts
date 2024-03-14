@@ -3,7 +3,7 @@ import log from "fancy-log";
 import { ROLE_BUTTON_PREFIX, waitingEmoji } from "../../Bot";
 import RoleButtons from "../../models/RoleButtons";
 import BasicEmbed from "../../utils/BasicEmbed";
-import Database from "../../utils/cache/database";
+import Database from "../../utils/data/database";
 import { debugMsg } from "../../utils/TinyUtils";
 import { SlashCommandProps } from "commandkit";
 import { UUID } from "crypto";
