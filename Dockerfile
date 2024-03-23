@@ -8,7 +8,7 @@ RUN apt-get update && \
   apt-get install -y ffmpeg
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /
 
 # Copy the package.json and package-lock.json files
 COPY package*.json ./
