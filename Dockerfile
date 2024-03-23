@@ -8,7 +8,7 @@ RUN apt-get update && \
   apt-get install -y ffmpeg
 
 # Set the working directory
-WORKDIR /
+WORKDIR /app
 
 # Copy the package.json and package-lock.json files
 COPY package*.json ./
@@ -21,4 +21,4 @@ RUN yarn install
 COPY . .
 
 # Set the command to start the app
-CMD [ "yarn", "start" ]
+CMD [ "npx", "tsx", "src/Bot.ts" ]
