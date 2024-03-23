@@ -29,6 +29,7 @@ export default function () {
     IMGUR_CLIENT_SECRET: string;
     MODMAIL_TABLE: string;
     DEFAULT_TIMEZONE: string;
+    MONGODB_DATABASE?: string;
   } = {
     BOT_TOKEN: process.env.BOT_TOKEN || "",
     OWNER_IDS: (process.env.OWNER_IDS || "").split(","),
@@ -48,6 +49,7 @@ export default function () {
     IMGUR_CLIENT_SECRET: process.env.IMGUR_CLIENT_SECRET || "",
     MODMAIL_TABLE: process.env.MODMAIL_TABLE || "",
     DEFAULT_TIMEZONE: process.env.DEFAULT_TIMEZONE || "Europe/London",
+    MONGODB_DATABASE: process.env.MONGODB_DATABASE || "test",
   };
 
   var missingKeys: string[] = [];
