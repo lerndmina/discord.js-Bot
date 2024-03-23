@@ -336,7 +336,7 @@ export function replaceInUrl(url: URL, oldString: string, newString: string) {
   return new URL(urlString);
 }
 
-export function getTimeMessage(time: ParsedTime, id: Snowflake) {
+export function getTimeMessage(time: ParsedTime, id: Snowflake, ephemeral = false) {
   const buttons = ButtonWrapper([
     new ButtonBuilder()
       .setCustomId("deleteMe-" + id)
@@ -349,7 +349,11 @@ export function getTimeMessage(time: ParsedTime, id: Snowflake) {
       .setStyle(ButtonStyle.Link),
   ]);
 
-  const content = `Converted to timestamp: ⏰ <t:${time.seconds}:F>\nUsing the timezone: \`${time.tz}\`\n\nUse this in your own message: \`\`\`<t:${time.seconds}:F>\`\`\``;
+  const content = `Converted to timestamp: ⏰ <t:${time.seconds}:F>\nUsing the timezone: \`${
+    time.tz
+  }\`\n\nUse this in your own message: \`\`\`<t:${time.seconds}:F>\`\`\`${
+    ephemeral ? "\n\nYou don't have permission to send public timestamps on other's messages." : ""
+  }`;
 
-  return { content, components: buttons };
+  return { content, components: ephemeral ? [] : buttons, ephemeral };
 }
