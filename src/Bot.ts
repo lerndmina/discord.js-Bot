@@ -64,9 +64,6 @@ export const BOT_MESSAGES: string[] = [
   "⏱️ Give me a moment... I'm buffering a punchline...",
 ];
 
-/**
- * @description Home url for lerndmina
- */
 export const BOT_URL: string = env.BOT_URL;
 
 export const ROLE_BUTTON_PREFIX = "roleGive-";
