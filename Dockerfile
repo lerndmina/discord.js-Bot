@@ -20,5 +20,5 @@ RUN yarn install
 # Copy the rest of the application files
 COPY . .
 
-# Run the bot
-RUN yarn start
+# Set the command to start the app
+CMD [ "yarn", "start" ]
