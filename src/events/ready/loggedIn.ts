@@ -2,6 +2,8 @@ import { ActivityType, type ActivityOptions, type Client, PresenceStatusData } f
 import type { CommandKit } from "commandkit";
 import log from "fancy-log";
 
+let internalLastRestart: number;
+
 /**
  *
  * @param {Client} c
@@ -17,4 +19,9 @@ export default (c: Client<true>, client: Client<true>, handler: CommandKit) => {
   };
   client.user.setActivity("DM For Modmail.", activityOptions);
   client.user.setStatus("online" as PresenceStatusData);
+
+  // Set last restart
+  internalLastRestart = Date.now();
 };
+
+export const lastRestart = internalLastRestart!;

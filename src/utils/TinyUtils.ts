@@ -357,3 +357,27 @@ export function getTimeMessage(time: ParsedTime, id: Snowflake, ephemeral = fals
 
   return { content, components: ephemeral ? [] : buttons, ephemeral };
 }
+
+export function msToTime(duration: number) {
+  const seconds = Math.floor((duration / 1000) % 60);
+  const minutes = Math.floor((duration / (1000 * 60)) % 60);
+  const hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(duration / (1000 * 60 * 60 * 24));
+
+  let timeString = "";
+
+  if (days > 0) {
+    timeString += `${days}d `;
+  }
+  if (hours > 0) {
+    timeString += `${hours}h `;
+  }
+  if (minutes > 0) {
+    timeString += `${minutes}m `;
+  }
+  if (seconds > 0) {
+    timeString += `${seconds}s`;
+  }
+
+  return timeString.trim();
+}
