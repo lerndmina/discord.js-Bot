@@ -20,8 +20,5 @@ RUN yarn install
 # Copy the rest of the application files
 COPY . .
 
-# Compile TypeScript to JavaScript
-RUN npx tsc
-
-# Set the command to start the app
-CMD [ "node", "dist/Bot.js" ]
+# Run the bot
+RUN yarn start
