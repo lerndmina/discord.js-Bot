@@ -1,29 +1,37 @@
-FROM node:latest
+# use the official Bun image
+# see all versions at https://hub.docker.com/r/oven/bun/tags
+FROM oven/bun:1 as base
+WORKDIR /usr/src/app
 
-# # Install Yarn
-# RUN npm install -g yarn
+# install dependencies into temp directory
+# this will cache them and speed up future builds
+FROM base AS install
+RUN mkdir -p /temp/dev
+COPY package.json bun.lockb /temp/dev/
+RUN cd /temp/dev && bun install --frozen-lockfile
 
-# Install FFmpeg & redis
-RUN apt-get update && \
-  apt-get install -y ffmpeg
+# install with --production (exclude devDependencies)
+RUN mkdir -p /temp/prod
+COPY package.json bun.lockb /temp/prod/
+RUN cd /temp/prod && bun install --frozen-lockfile --production
 
-# Create working directory
-RUN mkdir /app
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the package.json and package-lock.json files
-COPY package*.json ./
-
-# Install the dependencies
-RUN yarn install
-
-# Copy the rest of the application files
+# copy node_modules from temp directory
+# then copy all (non-ignored) project files into the image
+FROM base AS prerelease
+COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
-# # Compile TypeScript to JavaScript
-# RUN npx tsc
+# [optional] tests & build
+ENV NODE_ENV=production
+RUN bun test
+RUN bun run build
 
-# Set the command to start the app
-CMD [ "npm", "run", "start" ]
+# copy production dependencies and source code into final image
+FROM base AS release
+COPY --from=install /temp/prod/node_modules node_modules
+COPY --from=prerelease /usr/src/app/index.ts .
+COPY --from=prerelease /usr/src/app/package.json .
+
+# run the app
+USER bun
+ENTRYPOINT [ "bun", "run", "start" ]
