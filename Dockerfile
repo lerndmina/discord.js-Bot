@@ -7,12 +7,14 @@ FROM node:latest
 RUN apt-get update && \
   apt-get install -y ffmpeg
 
+# Create working directory
+RUN mkdir /app
+
 # Set the working directory
 WORKDIR /app
 
 # Copy the package.json and package-lock.json files
 COPY package*.json ./
-
 
 # Install the dependencies
 RUN yarn install
@@ -20,8 +22,8 @@ RUN yarn install
 # Copy the rest of the application files
 COPY . .
 
-# Compile TypeScript to JavaScript
-RUN npx tsc
+# # Compile TypeScript to JavaScript
+# RUN npx tsc
 
 # Set the command to start the app
 CMD [ "npm", "run", "start" ]
