@@ -21,7 +21,8 @@ export default class Database {
       throw new Error("Missing schema or model");
     }
     const mongoKey = Object.keys(model)[0];
-    const redisKey = schema.modelName + ":" + mongoKey + ":" + model[mongoKey];
+    const redisKey =
+      env.MONGODB_DATABASE + ":" + schema.modelName + ":" + mongoKey + ":" + model[mongoKey];
     debugMsg(`Key: ${mongoKey} -> ${redisKey}`);
     // The value of this map is the key for redis because it's unique
 
@@ -61,17 +62,17 @@ export default class Database {
       throw new Error("Missing schema or model");
     }
     const mongoKey = Object.keys(model)[0];
-    const redisKey = schema.modelName + ":" + mongoKey + ":" + model[mongoKey];
+    const redisKey =
+      env.MONGODB_DATABASE + ":" + schema.modelName + ":" + mongoKey + ":" + model[mongoKey];
     debugMsg(`Key: ${mongoKey} -> ${redisKey}`);
 
     debugMsg(`Fetching from cache: ${redisKey}`);
-    var data = await redisClient.get(redisKey);
+    var data = (await redisClient.get(redisKey)) as any;
 
     if (!data || data.length == 0) {
-      debugMsg(`Cache miss fetching db:`);
       debugMsg(model);
       data = await schema.find(model);
-      if (!data) {
+      if (!data || data.length == 0) {
         debugMsg(`Database miss no data found`);
         if (!saveNull) return null;
       }
@@ -108,7 +109,8 @@ export default class Database {
       throw new Error("Missing schema or model");
     }
     const mongoKey = Object.keys(model)[0];
-    const redisKey = schema.modelName + ":" + mongoKey + ":" + model[mongoKey];
+    const redisKey =
+      env.MONGODB_DATABASE + ":" + schema.modelName + ":" + mongoKey + ":" + model[mongoKey];
 
     await schema.findOneAndUpdate(model, object, options);
     await redisClient.set(redisKey, JSON.stringify(object));
@@ -129,7 +131,8 @@ export default class Database {
       throw new Error("Missing schema or model");
     }
     const mongoKey = Object.keys(model)[0];
-    const redisKey = schema.modelName + ":" + mongoKey + ":" + model[mongoKey];
+    const redisKey =
+      env.MONGODB_DATABASE + ":" + schema.modelName + ":" + mongoKey + ":" + model[mongoKey];
     debugMsg(`Deleting key: ${mongoKey} -> ${redisKey}`);
 
     await redisClient.del(redisKey);
@@ -158,6 +161,7 @@ export default class Database {
     if (env.DEBUG_LOG) debugMsg(`DB - Clean - Time taken: ${Date.now() - start!}ms`);
     return keys;
   }
+
   /**
    * @description Stores a key value pair in the cache with an optional cache time in seconds
    */
