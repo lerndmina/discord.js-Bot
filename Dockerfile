@@ -24,4 +24,4 @@ COPY . .
 RUN npx tsc
 
 # Set the command to start the app
-CMD [ "node", "dist/Bot.js" ]
+CMD [ "npm", "run", "start" ]
