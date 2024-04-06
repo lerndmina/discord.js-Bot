@@ -175,9 +175,7 @@ async function changeStatus(
   const activityType = ActivityEnum[activityString];
 
   try {
-    client.user.setPresence({
-      activities: [{ name: text, type: activityType as any }],
-    });
+    client.user.setActivity(text, { type: activityType as any });
   } catch (error) {
     return interaction.reply({
       content: "Invalid activity or status.",

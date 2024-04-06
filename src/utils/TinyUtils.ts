@@ -398,3 +398,11 @@ export function msToTime(duration: number) {
 
   return timeString.trim();
 }
+
+export async function fetchWithRedirectCheck(url: URL) {
+  const response = await fetch(url, { redirect: "follow" });
+  if (response.type === "opaqueredirect") {
+    throw new Error("Redirected to opaque URL, unable to determine final URL");
+  }
+  return response.url;
+}
