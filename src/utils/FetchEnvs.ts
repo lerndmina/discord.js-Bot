@@ -30,6 +30,8 @@ export default function () {
     MODMAIL_TABLE: string;
     DEFAULT_TIMEZONE: string;
     MONGODB_DATABASE?: string;
+    ZIPLINE_TOKEN: string;
+    ZIPLINE_BASEURL: string;
   } = {
     BOT_TOKEN: process.env.BOT_TOKEN || "",
     OWNER_IDS: (process.env.OWNER_IDS || "").split(","),
@@ -50,6 +52,8 @@ export default function () {
     MODMAIL_TABLE: process.env.MODMAIL_TABLE || "",
     DEFAULT_TIMEZONE: process.env.DEFAULT_TIMEZONE || "Europe/London",
     MONGODB_DATABASE: process.env.MONGODB_DATABASE || "test",
+    ZIPLINE_TOKEN: process.env.ZIPLINE_TOKEN || "",
+    ZIPLINE_BASEURL: process.env.ZIPLINE_BASEURL || "",
   };
 
   var missingKeys: string[] = [];
