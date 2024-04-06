@@ -94,15 +94,15 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
 
   await interaction.reply({ content: waitingEmoji, ephemeral: true });
 
-  // try {
-  const subcommand = interaction.options.getSubcommand();
-  if (subcommand === COMMAND_EDIT) return await edit({ interaction, client, handler });
-  if (subcommand === COMMAND_SEND) return await send({ interaction, client, handler });
-  if (subcommand === COMMAND_DELETE) return await deleteFunc({ interaction, client, handler });
-  if (subcommand === COMMAND_RESTORE) return await restore({ interaction, client, handler });
-  // } catch (error) {
-  //   return new CommandError(error, interaction, client).send();
-  // }
+  try {
+    const subcommand = interaction.options.getSubcommand();
+    if (subcommand === COMMAND_EDIT) return await edit({ interaction, client, handler });
+    if (subcommand === COMMAND_SEND) return await send({ interaction, client, handler });
+    if (subcommand === COMMAND_DELETE) return await deleteFunc({ interaction, client, handler });
+    if (subcommand === COMMAND_RESTORE) return await restore({ interaction, client, handler });
+  } catch (error) {
+    return new CommandError(error, interaction, client).send();
+  }
 
   return new CommandError(`Invalid subcommand`, interaction, client).send();
 }
