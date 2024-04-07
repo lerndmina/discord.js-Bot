@@ -37,7 +37,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
     {
       role: "system",
       content:
-        "You are an AI, you will be presented with a name or object. You must come up with a funny and incorrect description for the prompt. Please keep it short. You do not need to mention the object name in the response.",
+        "You are an AI, you will be presented with a name or object. You must come up with a funny and incorrect description for the prompt. Please keep it short. Do not mention the object name in the response.",
     },
   ];
 
@@ -52,9 +52,9 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
   // Send the message to OpenAI to be processed
   const response = (await openai
     .createChatCompletion({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: conversation as any,
-      // max_tokens: 256, // limit token usage
+      max_tokens: 256, // limit token usage
     })
     .catch((error) => {
       log.error(`OPENAI ERR: ${error}`);

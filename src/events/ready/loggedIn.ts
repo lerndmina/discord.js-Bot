@@ -16,7 +16,7 @@ export default async (c: Client<true>, client: Client<true>, handler: CommandKit
   const db = new Database();
   const settings = (await db.findOne(Settings, { botId: client.user?.id }, false)) as SettingsType;
 
-  if (settings && settings.activityText && settings.activityType) {
+  if (settings && settings.activityText) {
     const activity: ActivityOptions = {
       type: settings.activityType,
       name: settings.activityText,
