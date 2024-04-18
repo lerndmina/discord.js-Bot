@@ -74,7 +74,7 @@ export default class Database {
       data = await schema.find(model);
       if (!data || data.length == 0) {
         debugMsg(`Database miss no data found`);
-        if (!saveNull) return null;
+        if (!saveNull) return null; // Return which stops the redis cache from being set
       }
       await redisClient.set(redisKey, JSON.stringify(data));
       await redisClient.expire(redisKey, cacheTime);
