@@ -11,7 +11,7 @@ while true; do
   if [ -f $FILE ]; then
     echo "$FILE found, starting Bot..."
     echo "Bot started @ $(date)" >>restart.log
-    git pull && bun install && npx tsx src/Bot.ts
+    git pull && bun install -y && npx tsx src/Bot.ts
     echo "Bot detected in a crashed or stopped state, beginning restart process..."
     echo "Bot stoped or crashed @ $(date)" >>restart.log
     echo "Restarting in 3 seconds"
