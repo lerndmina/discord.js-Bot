@@ -406,3 +406,7 @@ export async function fetchWithRedirectCheck(url: URL) {
   }
   return response.url;
 }
+
+export function tsToDiscordTimestamp(ts: number) {
+  return `<t:${Math.floor(ts / 1000)}:F>`;
+}

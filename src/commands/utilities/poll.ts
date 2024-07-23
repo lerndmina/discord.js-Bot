@@ -24,6 +24,7 @@ import Database from "../../utils/data/database";
 import PollsSchema, { PollsType } from "../../models/PollsSchema";
 import { getPollEmbed } from "../../events/interactionCreate/poll-interaction";
 import { waitForPollEnd } from "../../events/ready/checkpolls";
+import SecondsFromTime from "../../utils/SecondsFromTime";
 export const data = new SlashCommandBuilder()
   .setName("poll")
   .setDescription("Create a poll for people to vote on anonymously.")
@@ -71,21 +72,9 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
       ephemeral: true,
     });
 
-  const timeStringArr = timeString!.split(" ");
+  const timeData = SecondsFromTime(timeString, 2592000);
 
-  var time = 0;
-
-  for (const timeStr of timeStringArr) {
-    time += ms(timeStr);
-
-    debugMsg(`Adding ${timeStr} to time. Total: ${time}`);
-  }
-
-  time = Math.round(time / 1000);
-
-  console.log(`TimeString: ${timeString} translated to ${time} seconds`);
-
-  if (time > 2592000) {
+  if (timeData.overLimit) {
     await interaction.reply({
       content: "",
       embeds: [BasicEmbed(client, "Poll Time Limit", "The maximum time limit is 30 days.")],
@@ -93,6 +82,8 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
     });
     return;
   }
+
+  const time = timeData.seconds;
 
   // check if the content is valid
   if (options.length < 2 || options.length > 25) {
