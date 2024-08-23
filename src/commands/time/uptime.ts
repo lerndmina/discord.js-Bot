@@ -22,7 +22,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
   const now = Date.now();
   const uptime = prettyMilliseconds(now - lastRestart, {
     verbose: true,
-    unitCount: 2,
+    unitCount: 3,
     secondsDecimalDigits: 0,
     millisecondsDecimalDigits: 0,
     separateMilliseconds: true,
