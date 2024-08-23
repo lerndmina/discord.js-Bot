@@ -27,6 +27,7 @@ import { Url } from "url";
 import chalk from "chalk";
 import { ParsedTime } from "./ParseTimeFromMessage";
 import ButtonWrapper from "./ButtonWrapper";
+import { randomUUID } from "crypto";
 
 const env = FetchEnvs();
 
@@ -164,7 +165,11 @@ export async function returnMessage(
   client: Client<true>,
   title: string,
   message: string,
-  args: { error?: boolean; firstMsg?: boolean } = { error: false, firstMsg: false }
+  args: { error?: boolean; firstMsg?: boolean; ephemeral?: boolean } = {
+    error: false,
+    firstMsg: false,
+    ephemeral: true,
+  }
 ) {
   const embed = BasicEmbed(
     client,
@@ -174,16 +179,24 @@ export async function returnMessage(
     args.error ? "Red" : "Green"
   );
 
-  if (args.firstMsg) {
-    return await interaction.reply({
+  try {
+    if (args.firstMsg) {
+      return await interaction.reply({
+        content: "",
+        embeds: [embed],
+        ephemeral: args.ephemeral,
+      });
+    }
+    await interaction.editReply({
       content: "",
-      embeds: [],
+      embeds: [embed],
+    });
+  } catch (error) {
+    await interaction.channel?.send({
+      content: "",
+      embeds: [embed],
     });
   }
-  await interaction.editReply({
-    content: "",
-    embeds: [embed],
-  });
 }
 
 export function getTagKey(guildId: Snowflake, tagName: string) {
@@ -360,6 +373,11 @@ export function getTimeMessage(time: ParsedTime, id: Snowflake, ephemeral = fals
       .setLabel("Delete Me")
       .setStyle(ButtonStyle.Danger)
       .setEmoji("🗑️"),
+    new ButtonBuilder()
+      .setCustomId("ts_dmMe-" + id + "-" + time.seconds + "-" + randomUUID())
+      .setLabel("I'm on Mobile!")
+      .setEmoji("📱")
+      .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
       .setURL("https://hammertime.cyou/en-GB?t=" + time.seconds)
       .setLabel("Edit this timestamp")
