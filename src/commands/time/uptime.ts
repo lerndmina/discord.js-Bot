@@ -24,7 +24,7 @@ export async function run({ interaction, client, handler }: SlashCommandProps) {
     verbose: true,
     unitCount: 2,
     secondsDecimalDigits: 0,
-    millisecondsDecimalDigits: 3,
+    millisecondsDecimalDigits: 0,
     separateMilliseconds: true,
   });
 
